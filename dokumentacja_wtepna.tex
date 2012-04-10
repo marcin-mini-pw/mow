@@ -1,0 +1,134 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage[OT4]{polski}
+
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+
+\usepackage[pdftex]{graphicx}
+
+\linespread{1.2}
+
+
+\title{Projekt z Metod Odkrywania Wiedzy\\dokumentacja wstępna\\\large{Proste algorytmy klasyfikacji tekstu. Porównania ze standardowymi algorytmami klasyfikacji dostępnymi w R.}\\}
+
+\author{Marcin Chwedczuk, Piotr Monarski}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Wstęp}
+\paragraph{}
+W treści zadania projektowego, zostały zasugerowane następujące algorytmy:
+TF-IDF, naiwny klasyfikator Bayesowski, kNN. Te algorytmy zostaną
+zaimplementowane i przeanalizowane na potrzeby niniejszego projektu.  
+
+\paragraph{}
+Kolejnym istotnym elementem projektu, jest wybranie zbioru danych na którym
+będą wykonywane algorytmy klasyfikacji. Tu również została zaproponowana
+lista możliwych zbiorów danych. Z dostępnych zbiorów danych tekstowych,
+zdecydowaliśmy się na NFS Research Abstracts (streszczenia projektów
+badawczych)\footnote{http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+Abstracts+1990-2003}
+
+\section{Algorytmy}
+\subsection{TF-IDF}
+\paragraph{}
+Term Frequency – Inverse Document Frequency, jest algorytmem tworzenia
+wektorów reprezentujących poszczególne dokumenty. Opiera się na dwóch
+wartościach. Pierwszą jest iloraz częstość występowania danego termu w
+dokumencie do sumy wszystkich termów. Druga wartość to logarytm z ilorazu
+ilości dokumentów do ilości dokumentów zawierających dany term. 
+
+Dokument przedstawiony w postaci wektora termów, rozszerzonego o wspomniane
+wartości będzie stanowił reprezentację dokumentów na potrzeby algorytmów. 
+
+\subsection{Naiwny klasyfikator Bayesowski}
+\paragraph{}
+
+Naiwna metoda Bayesa, jest probabilistyczną metodą opracowaną przez Thomasa
+Bayesa w XVIII wieku. Podstawowym założeniem metody jest rozłączność
+(niezależność) cech obiektu. Dlatego nazywamy tą metodą naiwnym
+klasyfikatorem, ponieważ jest to mocne uproszczenie rzeczywistości
+praktycznie niespotykane. Następnie wyliczane jest \textit{a priori}
+prawdopodobieństwo poszczególnych grup i atrybutów. W praktyce często
+korzysta się z  \textit{maximum likelihood estimation}, rzadziej przy pomocy
+estymatora Bayseowskiego.
+
+Algorytm można opisać równaniem:
+
+\[
+\max_{c \in G} P(c | X) = \frac{P(X|c)P(c)}{P(X)}
+\]
+gdzie:
+
+$P(c)$ - prawdopodobieństwo \textit{a priori} przynależenia do danej klasy
+
+$X = (x_1,x_2,...,x_n)$ - Wektor atrybutów 
+
+$P(c) = s_i / s$, $s$ ilość obiektów z zbiorze treningowym, $s_i$ ilość obiektów w danej grupie. 
+
+$P(X|c) = \prod\limits_{i} P(x_i | c)$
+
+$P(x_i | c) = s_{ic} / s_i$, gdzie $s_{ic}$ to ilość obiektów o wartości atrybutu równej $x_i$ w danej klasie $c$.
+
+
+\subsection{k-NN}
+\paragraph{}
+K najbliższych sąsiadów (k nearest neighbours), jest leniwym algorytmem
+gęstościowym. Jest to leniwy algorytm ponieważ, wszystkie najważniejsze
+obliczenia są wykonywane w momencie klasyfikacji. Trening modelu polega na
+umieszczenie wszystkich obiektów treningowy w przestrzeni atrybutów. Z kolei
+podczas klasyfikacji, badany obiekt rzutujemy do danej przestrzeni i szukamy
+jego k-najbliższych sąsiadów. Następnie sąsiedzi głosuje zgodnie ze swoją
+przynależnością grupową, w ten sposób określając grupę klasyfikowanego
+obiektu. 
+
+\paragraph{} Sam algorytm jest bardzo prosty i zarazem bardzo skuteczny. Jego
+specyfikę określają wartość $k$ oraz metryka opisująca odległość miedzy
+obiektami. Najłatwiej jego działanie przedstawić na przykładnie pseudo kodu.
+
+\begin{verbatim}
+PriorityQueue pq
+for t in traning_objects:
+    pq.add( dist(Obj,t) )
+
+PriorityMap m
+for t in pq.get(k):
+    if t in m:
+        m[t] = 1
+        continue
+    m[t] += 1 
+
+return m.getMax().group
+\end{verbatim}
+
+Gzie \textit{Obj} to klasyfikowany obiekt a \textit{k} to ilość
+rozpatrywanych sąsiadów i \textit{dist} jest funkcją metryki odległości.
+
+\section{Eksperymenty}
+\paragraph{}
+Celem projektu jest implementacja wymienionych powyżej algorytmów i porównanie ich z już dostępnymi w języku R. Dlatego eksperymenty będą polegały na zbadaniu skuteczności poszczególnych algorytmów dla różnych zestawów uczących i testujących. 
+
+
+\paragraph{}
+Wybrany zbiór danych stanowi streszczenia projektów badawczych. Jest to
+ciekawy zbiór danych ponieważ teksty naukowe zawierają zestawy słów
+unikalnych dla konkretnych dziedzin problemu. Dlatego spodziewane są bardzo
+dobre wyniki klasyfikacji dla każdego z algorytmu. 
+
+Dodatkowo zbiór słów w dokumencie zostanie poddany stemmingowi, czyli
+wyekstrahowaniu rdzeni słów co również umożliwi dokładniejszą klasyfikację.
+Zbiór danych jest w języku angielskim dlatego w ramach projektu wykorzystamy
+stemmer Portera.  
+
+
+\paragraph{}
+Jakość modeli zostanie przedstawiona w postaci wartości procentowej
+opisującej ilość poprawnie zaklasyfikowanych obiektów w danej próbie. Dla
+potrzeb porównawczych zostanie również przestawiona średnia wartość ze
+wszystkich testów dla każdego algorytmu. 
+
+
+\end{document}
