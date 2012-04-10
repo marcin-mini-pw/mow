@@ -1,0 +1,8 @@
+!*.tex
+!.gitignore
+!Makefile
+*.aux
+*.out
+*.log
+*.pdf
+
