@@ -11,7 +11,7 @@
 \linespread{1.2}
 
 
-\title{Projekt z Metod Odkrywania Wiedzy\\dokumentacja wstępna\\\large{Proste algorytmy klasyfikacji tekstu. Porównania ze standardowymi algorytmami klasyfikacji dostępnymi w R.}\\}
+\title{Projekt z Metod Odkrywania Wiedzy\\Dokumentacja wstępna\\\Large{Proste algorytmy klasyfikacji tekstu. Porównania ze standardowymi algorytmami klasyfikacji dostępnymi~w~R.}\\}
 
 \author{Marcin Chwedczuk, Piotr Monarski}
 \date{}
@@ -31,6 +31,41 @@ będą wykonywane algorytmy klasyfikacji. Tu również została zaproponowana
 lista możliwych zbiorów danych. Z dostępnych zbiorów danych tekstowych,
 zdecydowaliśmy się na NFS Research Abstracts (streszczenia projektów
 badawczych)\footnote{http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+Abstracts+1990-2003}
+
+\section{Dane uczące oraz testowe}
+
+	Jako dane uczące oraz testowe postanowiliśmy wykorzystać
+	zbiór \textit{NSF Research Award Abstracts 1990-2003 Data Set}
+	wchodzący w skład repozytorium UCI.
+	
+	Zbiór ten zawiera 129 tysięcy streszczeń artykułów naukowych 
+	w języku angielskim,
+	które zostały nagrodzone przez National Science Foundation.
+	Każdemu streszczeniu towarzyszy szereg informacji zawierających
+	między innymi nazwiska autorów artykułu, tytuł artykułu oraz
+	dziedzinę zastosowań (przy czym artykuł może mieć więcej 
+	niż jedną dziedzinę zastosowań).
+	Łączny rozmiar nieskompresowanego zbioru danych to ponad 400 MB.
+	
+	Ponieważ dane w ,,czystej formie'' zawierają zbyt wiele niepotrzebnych informacji
+	więc zostaną wstępnie przetworzone do zbioru 
+	par $<F, T>$. Gdzie $F$ oznaczać będzie listę dziedzin artykułu
+	a $T$ tekst streszczenia artykułu. Zauważmy że w tym wypadku $F$
+	określa klasy do których należy tekst $T$.
+	
+	Po przetworzeniu danych być może okaże się konieczne odrzucenie
+	części z nich - tj. usunięcie tekstów należących do tych kategorii 
+	które są reprezentowane w niedostatecznych sposób (np. pokrywają
+	mniej niż 500 streszczeń). Podobnie może okazać się konieczne 
+	scalenie ze sobą niektórych klas np. kategorie ,,Computer Science & Engineering'' oraz ,,Engineering & Computer Science'' występują w danych jako dwa niezależne byty. Ze względu na niewielką liczbę
+	dziedzin scalenie takie zostanie dokonane przez autorów projektu
+	w sposób ,,ręczny''.
+	
+	Zbiór testowy będzie stanowił 20\% początkowych danych i zostanie
+	wybrany w sposób losowy. Pozostałe dane będą stanowić zbiór uczący.
+	Oczywiście w przypadku uzyskania bardzo dobrych / niezadowalających
+	wyników powyższa proporcja może ulec zmianie.
+	
 
 \section{Algorytmy}
 \subsection{TF-IDF}
@@ -129,6 +164,23 @@ Jakość modeli zostanie przedstawiona w postaci wartości procentowej
 opisującej ilość poprawnie zaklasyfikowanych obiektów w danej próbie. Dla
 potrzeb porównawczych zostanie również przestawiona średnia wartość ze
 wszystkich testów dla każdego algorytmu. 
+
+% --------------------------------------------
+% BIBLIOGRAFIA
+% --------------------------------------------
+
+\begin{thebibliography}{9}
+
+\bibitem{abstracts}
+   \emph{NSF Research Award Abstracts 1990-2003 Data Set}.
+   \url{http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+Abstracts+1990-2003}
+\bibitem{irbook}
+	\emph{An Introduction to Information Retrieval}. 
+	C. D. Manning, P. Raghavan, H. Sch\"utze.
+	Cambridge University Press.
+	Wersja online: \url{http://nlp.stanford.edu/IR-book/html/htmledition/irbook.html}
+
+\end{thebibliography}
 
 
 \end{document}
