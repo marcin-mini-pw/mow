@@ -115,39 +115,76 @@ następujące pytania:
 	\[ \textrm{tf-idf}(w, t) = \textrm{tf}(w, t) \cdot log{\frac{|T|}{|\{t \in T: w \in t \}| + 1}} \]
 	przy czym tf$(w, t)$ oznacza liczbę wystąpień słowa $w$ w tekście $t$.
 	
-	Przedstawione w następnej sekcji algorytmy operować będą
-	na utworzonym w powyższy sposób zbiorze wektorów $\{v_t: t \in T\}$.
+	Przedstawione w następnej sekcji algorytmy, gdy nie
+	będzie powiedziane inaczej, będą operować 
+	na zbiorze wektorów $\{v_t: t \in T\}$.
 
 \section{Algorytmy}
 
-\subsection{Naiwny klasyfikator bayesowski}
-Naiwna metoda Bayesa, jest probabilistyczną metodą opracowaną przez Thomasa
-Bayesa w XVIII wieku. Podstawowym założeniem metody jest rozłączność
-(niezależność) cech obiektu. Dlatego nazywamy tą metodą naiwnym
-klasyfikatorem, ponieważ jest to mocne uproszczenie rzeczywistości
-praktycznie niespotykane. Następnie wyliczane jest \textit{a priori}
-prawdopodobieństwo poszczególnych grup i atrybutów. W praktyce często
-korzysta się z  \textit{maximum likelihood estimation}, rzadziej przy pomocy
-estymatora Bayseowskiego.
+\subsection{Naiwny klasyfikator bayesowski (NKB)}
+	
+	Niech $\Omega$ oznacza dziedzinę klasyfikowanych przykładów,
+	a $TR$ zbiór trenujący będący podzbiorem dziedziny.
+	Ponadto dla $x \in \Omega$ niech
+	$c(x) \in C$ oznacza klasę do której należy przykład $x$,
+	a $a_i(x)$ wartość atrybutu o numerze $i$.
+	Wtedy
+	hipotezę tworzoną przez algorytm NKB możemy zapisać 
+	następująco:
+	\[ h(x) = \arg\max_{c \in C}{
+		P(c) \cdot \prod_{i=1}^{n} P(a_i(x)|c)	
+	} \]
+	gdzie
+	\begin{list}{}{}
+		\item
+			$P(c) = \frac{|TR^c|}{|TR|}$
+		\item
+			$P(a_i(x)|c) = \frac{|TR_{a_i = a_i(x)}^c| + p\cdot m}{|TR^c| + m}$ \  (dodatkowo stosujemy m-estymacje)
+	
+	\end{list}
+	
+	Podczas implementacji wykorzystamy zlogarytmowaną postać 
+	powyższego równania.
+	
+	W pracy zastosujemy dwa różne podejścia do klasyfikacji
+	za pomocą naiwnego klasyfikatora bayesowskiego(NKB).
+	
+	\subsubsection{Klasyfikacja wektorów $v_t$}
 
-Algorytm można opisać równaniem:
+		W tym podejściu będziemy klasyfikować wektory $v_t$.
+		Ponieważ zawierają one atrybuty ciągłe konieczna będzie 
+		ich dyskretyzacja. Dodatkowo ilość atrybutów
+		w tym przypadku może przekroczyć 30 tysięcy, 
+		co pociągnie za sobą konieczność
+		odrzucenia niektórych z nich.
+		Do tego celu zostanie wykorzystana ocena przydatności
+		danego słowa zwracana przez algorytm TF-IDF.	
+	
+	\subsubsection{Wykorzystanie algorytmu Multinomial naive bayes (MNB)}
+	
+		W tym przypadku będziemy operować bezpośrednio na 
+		przetworzonych tekstach streszczeń oraz na 
+		poszczególnych słowach.
+		W tym wypadku:
+		\[ h(t) = \arg\max_{c \in C}{
+			P(c) \cdot \prod_{w \in t} P(w|c)	
+		} \]
+		(iloczyn przebiega po wszystkich słowach zawartych
+		w tekście t)\\
+		gdzie
+		\begin{list}{}{}
+		\item
+			$P(c) = \frac{|TR^c|}{|TR|}$
+		\item
+			$P(w|c)$ - Liczba wystąpień słowa $w$ we wszystkich tekstach należących do kategorii $c$ powiększona o 1 i podzielona 
+			przez liczbę wszystkich słów występujących w tych
+			tekstach plus liczbę różnych słów występujących w 
+			zbiorze uczącym
+		\end{list}
 
-\[
-\max_{c \in G} P(c | X) = \frac{P(X|c)P(c)}{P(X)}
-\]
-gdzie:
-
-$P(c)$ - prawdopodobieństwo \textit{a priori} przynależenia do danej klasy
-
-$X = (x_1,x_2,...,x_n)$ - Wektor atrybutów 
-
-$P(c) = s_i / s$, $s$ ilość obiektów z zbiorze treningowym, $s_i$ ilość obiektów w danej grupie. 
-
-$P(X|c) = \prod\limits_{i} P(x_i | c)$
-
-$P(x_i | c) = s_{ic} / s_i$, gdzie $s_{ic}$ to ilość obiektów o wartości atrybutu równej $x_i$ w danej klasie $c$.
-
-
+		Pełny opis algorytmu można znaleźć  na stronach 258 - 262
+		pozycji [2].
+	
 \subsection{kNN}
 K najbliższych sąsiadów (k nearest neighbours), jest leniwym algorytmem
 gęstościowym. Jest to leniwy algorytm ponieważ, wszystkie najważniejsze
