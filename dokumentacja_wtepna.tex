@@ -8,7 +8,7 @@
 
 \usepackage[pdftex]{graphicx}
 
-\linespread{1.2}
+%\linespread{1.2}
 
 
 \title{Projekt z Metod Odkrywania Wiedzy\\Dokumentacja wstępna\\\Large{Proste algorytmy klasyfikacji tekstu. Porównania ze standardowymi algorytmami klasyfikacji dostępnymi~w~R.}\\}
@@ -20,24 +20,36 @@
 \maketitle
 
 \section{Wstęp}
-\paragraph{}
-W treści zadania projektowego, zostały zasugerowane następujące algorytmy:
-TF-IDF, naiwny klasyfikator Bayesowski, kNN. Te algorytmy zostaną
-zaimplementowane i przeanalizowane na potrzeby niniejszego projektu.  
 
-\paragraph{}
-Kolejnym istotnym elementem projektu, jest wybranie zbioru danych na którym
-będą wykonywane algorytmy klasyfikacji. Tu również została zaproponowana
-lista możliwych zbiorów danych. Z dostępnych zbiorów danych tekstowych,
-zdecydowaliśmy się na NFS Research Abstracts (streszczenia projektów
-badawczych)\footnote{http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+Abstracts+1990-2003}
+W ramach projektu z przedmiotu Metody Odkrywania Wiedzy 
+postanowiliśmy zająć się klasyfikacją tekstów. 
+Zadanie jakie przed sobą postawiliśmy polega na przypisaniu
+dziedziny nauki z jaką jest związany dany artykuł naukowy
+na podstawie jego abstraktu (nazywanego w dalszej części dokumentu
+streszczeniem).
+
+W trakcie projektu zostaną zaimplementowane
+algorytm kNN oraz naiwny klasyfikator bayesowski,
+zostaną także stworzone procedury wstępnie przetwarzające
+tekst (związane z algorytmem TF-IDF).
+
+W ramach części analitycznej postaramy się odpowiedzieć na
+następujące pytania:
+\begin{enumerate}
+	\item
+		Który z testowanych algorytmów 
+		najlepiej radzi sobie z postawionym
+		problemem klasyfikacji
+	\item
+		Jakie czynniki mają decydujący wpływ na jakość
+		uzyskiwanych hipotez
+\end{enumerate}
 
 \section{Dane uczące oraz testowe}
 
 	Jako dane uczące oraz testowe postanowiliśmy wykorzystać
 	zbiór \textit{NSF Research Award Abstracts 1990-2003 Data Set}
 	wchodzący w skład repozytorium UCI.
-	
 	Zbiór ten zawiera 129 tysięcy streszczeń artykułów naukowych 
 	w języku angielskim,
 	które zostały nagrodzone przez National Science Foundation.
@@ -47,41 +59,68 @@ badawczych)\footnote{http://archive.ics.uci.edu/ml/datasets/NSF+Research+Award+A
 	niż jedną dziedzinę zastosowań).
 	Łączny rozmiar nieskompresowanego zbioru danych to ponad 400 MB.
 	
-	Ponieważ dane w ,,czystej formie'' zawierają zbyt wiele niepotrzebnych informacji
+	Ponieważ oryginalne dane zawierają zbyt wiele 
+	niepotrzebnych informacji
 	więc zostaną wstępnie przetworzone do zbioru 
-	par $<F, T>$. Gdzie $F$ oznaczać będzie listę dziedzin artykułu
-	a $T$ tekst streszczenia artykułu. Zauważmy że w tym wypadku $F$
-	określa klasy do których należy tekst $T$.
+	par $(F, T)$. Gdzie $F$ oznaczać będzie listę dziedzin artykułu
+	a $T$ tekst streszczenia artykułu.
 	
-	Po przetworzeniu danych być może okaże się konieczne odrzucenie
+	Po przetworzeniu danych może okazać się konieczne odrzucenie
 	części z nich - tj. usunięcie tekstów należących do tych kategorii 
 	które są reprezentowane w niedostatecznych sposób (np. pokrywają
 	mniej niż 500 streszczeń). Podobnie może okazać się konieczne 
-	scalenie ze sobą niektórych klas np. kategorie ,,Computer Science \& Engineering'' oraz ,,Engineering \& Computer Science'' występują w danych jako dwa niezależne byty. Ze względu na niewielką liczbę
-	dziedzin scalenie takie zostanie dokonane przez autorów projektu
-	w sposób ,,ręczny''.
+	scalenie ze sobą niektórych kategorii np. klasy ,,Computer Science \& Engineering'' oraz ,,Engineering \& Computer Science'' występują w danych jako dwa niezależne byty.
 	
-	Zbiór testowy będzie stanowił 20\% początkowych danych i zostanie
-	wybrany w sposób losowy. Pozostałe dane będą stanowić zbiór uczący.
-	Oczywiście w przypadku uzyskania bardzo dobrych / niezadowalających
-	wyników powyższa proporcja może ulec zmianie.
+	Zbiór testowy będzie stanowił co najmniej 20\% 
+	początkowych danych i zostanie
+	wybrany w sposób losowy. 
+	Pozostałe dane będą stanowić zbiór uczący.
 	
+	
+\section{Wstępne przetworzenie tekstu}
+	
+	Tekst streszczeń artykułów zostanie wstępnie przetworzony
+	w następujący sposób:
+	\begin{enumerate}
+		\item
+			Duże litery alfabetu zostaną zamienione na odpowiadające im
+			małe litery. Z tekstu zostaną usunięte liczby oraz
+			znaki przestankowe	
+		
+		\item
+			Tekst zostanie poddany \emph{stemmingowi},
+			dzięki któremu zostaną
+			wyodrębnione rdzenie poszczególnych słów. 
+			Na przykład słowa:
+			\textit{fishing}, \textit{fished} oraz \textit{fisher} 
+			zostaną zamienione na słowo \textit{fish}.
+			Stemming zostanie przeprowadzony za pomocą 
+			algorytmu  Portera, dostępnego między innymi
+			w pakiecie \texttt{tm} języka R
+			
+		\item
+			Zostaną usunięte słowa nie niosące żadnej informacji
+			na przykład słówko \textit{the}, dodatkowo zostaną 
+			usunięte słowa występujące zbyt rzadko w streszczeniach --
+			odpowiedni parametr zostanie dobrany eksperymentalnie 		
+	\end{enumerate}
+	
+	Następnie dokonamy wektoryzacji tekstów. Niech $D$ oznacza 
+	zbiór słów które występują w przynajmniej jednym z przetworzonych
+	tekstów, a $T$ zbiór wszystkich tekstów. 
+	Wtedy tekstowi $t \in T$ będzie odpowiadał wektor $v_t$
+	indeksowany słowami $w \in D$ taki że 
+	\[ v_t[w] = \textrm{tf-idf}(w, t) \]
+	Gdzie wartość $\textrm{tf-idf}(w, t)$ jest zdefiniowana następująco
+	\[ \textrm{tf-idf}(w, t) = \textrm{tf}(w, t) \cdot log{\frac{|T|}{|\{t \in T: w \in t \}| + 1}} \]
+	przy czym tf$(w, t)$ oznacza liczbę wystąpień słowa $w$ w tekście $t$.
+	
+	Przedstawione w następnej sekcji algorytmy operować będą
+	na utworzonym w powyższy sposób zbiorze wektorów $\{v_t: t \in T\}$.
 
 \section{Algorytmy}
-\subsection{TF-IDF}
-\paragraph{}
-Term Frequency – Inverse Document Frequency, jest algorytmem tworzenia
-wektorów reprezentujących poszczególne dokumenty. Opiera się na dwóch
-wartościach. Pierwszą jest iloraz częstość występowania danego termu w
-dokumencie do sumy wszystkich termów. Druga wartość to logarytm z ilorazu
-ilości dokumentów do ilości dokumentów zawierających dany term. 
 
-Dokument przedstawiony w postaci wektora termów, rozszerzonego o wspomniane
-wartości będzie stanowił reprezentację dokumentów na potrzeby algorytmów. 
-
-\subsection{Naiwny klasyfikator Bayesowski}
-\paragraph{}
-
+\subsection{Naiwny klasyfikator bayesowski}
 Naiwna metoda Bayesa, jest probabilistyczną metodą opracowaną przez Thomasa
 Bayesa w XVIII wieku. Podstawowym założeniem metody jest rozłączność
 (niezależność) cech obiektu. Dlatego nazywamy tą metodą naiwnym
@@ -109,8 +148,7 @@ $P(X|c) = \prod\limits_{i} P(x_i | c)$
 $P(x_i | c) = s_{ic} / s_i$, gdzie $s_{ic}$ to ilość obiektów o wartości atrybutu równej $x_i$ w danej klasie $c$.
 
 
-\subsection{k-NN}
-\paragraph{}
+\subsection{kNN}
 K najbliższych sąsiadów (k nearest neighbours), jest leniwym algorytmem
 gęstościowym. Jest to leniwy algorytm ponieważ, wszystkie najważniejsze
 obliczenia są wykonywane w momencie klasyfikacji. Trening modelu polega na
@@ -179,6 +217,8 @@ wszystkich testów dla każdego algorytmu.
 	C. D. Manning, P. Raghavan, H. Sch\"utze.
 	Cambridge University Press.
 	Wersja online: \url{http://nlp.stanford.edu/IR-book/html/htmledition/irbook.html}
+\bibitem{wikistemming}
+	Wikipedia, Stemming, \url{http://en.wikipedia.org/wiki/Stemming}
 
 \end{thebibliography}
 
