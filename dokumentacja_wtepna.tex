@@ -159,9 +159,12 @@ następujące pytania:
 		odrzucenia niektórych z nich.
 		Do tego celu zostanie wykorzystana ocena przydatności
 		danego słowa zwracana przez algorytm TF-IDF.	
+		
+		Parametrami algorytmu będą sposób dyskretyzacji oraz 
+		poziom oceny TF-IDF poniżej którego będą odrzucane poszczególne
+		atrybuty.
 	
 	\subsubsection{Wykorzystanie algorytmu Multinomial naive bayes (MNB)}
-	
 		W tym przypadku będziemy operować bezpośrednio na 
 		przetworzonych tekstach streszczeń oraz na 
 		poszczególnych słowach.
@@ -184,6 +187,10 @@ następujące pytania:
 
 		Pełny opis algorytmu można znaleźć  na stronach 258 - 262
 		pozycji [2].
+		
+		Parametrem tego algorytmu będzie sposób wyboru najbardziej
+		znaczących słów (za pomocą TF-IDF) które będą wykorzystywane
+		w procesie klasyfikacji.
 	
 \subsection{kNN}
 K najbliższych sąsiadów (k nearest neighbours), jest leniwym algorytmem
@@ -217,28 +224,38 @@ return m.getMax().group
 Gzie \textit{Obj} to klasyfikowany obiekt a \textit{k} to ilość
 rozpatrywanych sąsiadów i \textit{dist} jest funkcją metryki odległości.
 
-\section{Eksperymenty}
-\paragraph{}
-Celem projektu jest implementacja wymienionych powyżej algorytmów i porównanie ich z już dostępnymi w języku R. Dlatego eksperymenty będą polegały na zbadaniu skuteczności poszczególnych algorytmów dla różnych zestawów uczących i testujących. 
+\section{Ocena jakości algorytmów} 
+
+Przy ocenie algorytmów przyjmiemy pewne uproszczenie,
+założymy że jeśli hipoteza zwraca jedną z możliwych 
+dziedzin artykułu (dla artykułów które posiadają więcej
+niż jedną dziedzinę) to klasyfikacja zakończyła się sukcesem,
+nie będziemy natomiast od hipotezy wymagać podania wszystkich
+kategorii danego artykułu.
+
+Ze względu na to że przypisujemy artykuły do zbioru 
+klas $|C| > 2$ nie możemy przy liczeniu błędu korzystać
+z takich wskaźników jak np. TP Rate.
+Dlatego jako miarę błędu na zbiorze przykładów $X$ przyjmiemy:
+\[ \textrm{error}(X) = \frac{1}{|C|-1} 
+	\sum_{c \in |C|} (\textrm{error}_c)^2 \]
+\[ \textrm{error}_c = \frac{|\{x\in X^c: h(x) \neq c\}|}{|X^c|} \]
+
+Dodatkowo jako alternatywną miarę błędu będziemy stosować wzór:
+\[ \textrm{error2}(X) = \frac{|\{x\in X: h(x) \neq c\}|}{|X|} \]
 
 
-\paragraph{}
-Wybrany zbiór danych stanowi streszczenia projektów badawczych. Jest to
-ciekawy zbiór danych ponieważ teksty naukowe zawierają zestawy słów
-unikalnych dla konkretnych dziedzin problemu. Dlatego spodziewane są bardzo
-dobre wyniki klasyfikacji dla każdego z algorytmu. 
+\section{Porównanie z algorytmami dostępnymi w R}
 
-Dodatkowo zbiór słów w dokumencie zostanie poddany stemmingowi, czyli
-wyekstrahowaniu rdzeni słów co również umożliwi dokładniejszą klasyfikację.
-Zbiór danych jest w języku angielskim dlatego w ramach projektu wykorzystamy
-stemmer Portera.  
+W ramach projektu postaramy się porównać
+przygotowane przez nas implementacje algorytmów z
+ich odpowiednikami w R. Dodatkowo do porównań
+wykorzystamy dostępne w R algorytmy budujące drzewa decyzyjne.
+%oraz podejście oparte na support vector machine (SVM).
+Ponadto porównamy wszystkie powyższe algorytmy z algorytmem
+przydzielającym etykiety do klas w sposób losowy.
 
 
-\paragraph{}
-Jakość modeli zostanie przedstawiona w postaci wartości procentowej
-opisującej ilość poprawnie zaklasyfikowanych obiektów w danej próbie. Dla
-potrzeb porównawczych zostanie również przestawiona średnia wartość ze
-wszystkich testów dla każdego algorytmu. 
 
 % --------------------------------------------
 % BIBLIOGRAFIA
