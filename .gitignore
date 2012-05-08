@@ -1,4 +1,5 @@
 !*.tex
+!*.r
 !.gitignore
 !Makefile
 *.aux
