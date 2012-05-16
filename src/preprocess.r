@@ -85,9 +85,10 @@ extract.field.of.application <- function(lines) {
 	
 	lines <- gsub("^Fld Applictn[ \t]*:[ \t]*", "", lines);
 	lines <- gsub("^[ \t]*[0-9]+[ \t]*", "", lines);
-	lines <- gsub("[^A-Za-z0-9\n\t ]+", ".", lines);
+	lines <- gsub("[^-A-Za-z0-9& \t\n\r]+", ".", lines);
 
-	lines <- trim.lines(lines);
+	# Usuwamy spacje
+	lines <- gsub("[ \t\n\r]+", "", lines);
 	
 	tmp   <- '';
 	if(length(lines) > 1)
@@ -126,15 +127,37 @@ extract.information <- function(lines) {
 	field.of.app <- extract.field.of.application(lines);
 	abstract <- extract.abstract(lines);
 
-	cat(field.of.app);
+	# cat(field.of.app);
 	return(c(field.of.app, "", abstract));
+}
+
+# FUNC is.valid.article.description(lines)
+#
+# funkcja sprawdza czy podany artykul zawiera wymagane
+# dane (tj. co najmniej jedna kategorie oraz tekst
+# streszczenia dluzszy niz co najmniej N znakow)
+#
+# funkcja zostala wprowadzona poniewaz niektore
+# artykuly nie mialy przypisanych kategorii, inne
+# z koleji w polu abstract posiadaly wpis "Not Available"
+#
+is.valid.article.description <- function(lines, N=30) {	
+	is.valid <- ( length(lines) == 3 );
+
+	if(is.valid)
+		is.valid <- !is.na(lines[1]) && nchar(lines[1]) > 0;
+
+	if(is.valid)
+		is.valid <- !is.na(lines[3]) && nchar(lines[3]) > N;
+
+	return(is.valid);
 }
 
 
 # FUNC preprocess.article(full.input.path, full.output.path)
 #
 preprocess.article <- function(full.input.path, full.output.path)  {
-	cat(sprintf("Open: %s, Save: %s\n", full.input.path, full.output.path));
+	cat(sprintf("[%s]", full.input.path));
 	
 	handle <- file(full.input.path, "rt");
 	lines  <- readLines(handle);
@@ -142,9 +165,15 @@ preprocess.article <- function(full.input.path, full.output.path)  {
 
 	lines <- extract.information(lines);
 
-	handle <- file(full.output.path, "wt");
-	writeLines(lines, handle);
-	close(handle);
+	if(is.valid.article.description(lines)) {
+		handle <- file(full.output.path, "wt");
+		writeLines(lines, handle);
+		close(handle);
+	}
+	else {
+		cat(': Invalid content');
+	}
+	cat('\n');
 }
 
 # FUNC preprocess(input.path, output.path)
@@ -170,7 +199,7 @@ preprocess <- function(input.path, output.path) {
 	for(a in articles) {
 		full.input.path  <- paste(input.path, a, sep='');
 		full.output.path <- paste(output.path, a, sep='');
-		preprocess.article(full.input.path, full.output.path);
+		try(preprocess.article(full.input.path, full.output.path));
 	}
 
 }
