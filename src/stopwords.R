@@ -8,6 +8,9 @@
 #
 # !mc
 
+# TODO: moze warto przezucic to do osobnego pliku
+# i wczytywac przy initialize...
+#
 STOP.WORDS.VECTOR <- c(
 	"a", "about", "above", "above", "across", "after", 
 	"afterwards", "again", "against", "all", "almost", 
@@ -74,7 +77,13 @@ init.stop.words.dictionary <- function() {
 #
 # funkcja sprawdza czy podane slowo znajduje
 # sie na liscie stop words
+# fix: z powodu uzycia funkcji przy operajach indeksowania
+# np. words[ !is.stop.word(words) ]
+# musi ona poprawnie obslugiwac rowniez wektory slow
 #
 is.stop.word <- function(word) {
-	return( exists(word, envir=STOP.WORDS.ENV) );
+	return( 
+		sapply(word, function(w) exists(w, envir=STOP.WORDS.ENV, inherits=FALSE)) 
+	);
 }
+

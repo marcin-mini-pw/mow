@@ -27,6 +27,10 @@
 # !mc
 #
 
+# zeby uchronic sie od wplywu jezyka na sposob sortowania napisow
+# ustawiamy locale na C
+Sys.setlocale(category="LC_ALL", locale="C");
+
 library('Rstem');
 
 # FUNC read.all.lines(file.name)
@@ -202,6 +206,134 @@ compute.global.stats <- function(articles.directory) {
 	return( list(count=count, words=words, categories=categories) );
 }
 
+# META COLUMNS - dodatkowe kolumny ktore dodajemy do
+# data frame'u
+META.COLUMNS <- c('filename', 'wordcount');
+
+
+# FUNC add.df.header(df.file, art.stats)
+#
+# funkcja zapisuje do pliku df.file nazwy kolumn
+# dataframe'u na podstawie art.stats 
+#
+add.df.header <- function(df.file, art.stats) {
+	word.col.names <- paste('w.', sort(ls(envir=art.stats$words)), sep='');
+	cats.col.names <- paste('c.', sort(ls(envir=art.stats$categories)), sep='');
+
+	meta.col.names <- paste('meta.', META.COLUMNS, sep='');
+
+	cat( c(word.col.names, cats.col.names, meta.col.names), 
+		file=df.file, sep='\t' );
+	cat( '\n', file=df.file, sep='' );
+}
+
+
+# FUNC write.env.cols(env, file)
+#
+write.env.cols <- function(envir, file) {
+	col.names <- sort(ls(envir=envir));
+
+	for(c in col.names) {
+		tmp <- get(c, envir=envir);
+		cat(tmp, file=file, sep='');
+		cat('\t', file=file, sep='');
+	}
+}
+
+# FUNC add.df.stats.row(df.file, art.stats)
+#
+# funkcja dodaje pierwszy wiersz do data frame'u
+# pierwszy wiersz zawiera statystyki dotyczace 
+# calego zbioru artow np. ilosc wystapien danego slowa
+# we wszystkich artach razem wzietych
+#
+add.df.stats.row <- function(df.file, art.stats) {
+	write.env.cols(art.stats$words, df.file);
+	write.env.cols(art.stats$categories, df.file);
+
+	for(  i in 1:(length(META.COLUMNS)-1)  ) {
+		cat('na\t', file=df.file, sep='');
+	}
+	cat('na\n', file=df.file, sep='');
+}
+
+# FUNC write.art.row.cols(aenv, genv, file)
+#
+write.art.row.cols <- function(aenv, genv, file) {
+	col.names <- sort(ls(envir=genv));
+
+	for(c in col.names) {
+		if( exists(c, envir=aenv, inherits=FALSE) ) {
+			tmp <- get(c, envir=aenv);
+			cat(tmp, file=file, sep='');
+		}
+		else {
+			cat('0', file=file, sep='');
+		}
+
+		cat('\t', file=file, sep='');
+	}
+}
+
+# FUNC add.article.row(art, stats, file)
+#
+# funkcja odpowiada za dodanie wiersza danych odpowiadajacych
+# pojedynczemu plikowi artykulu
+#
+add.article.row <- function(art, stats, file) {
+	art.env <- new.env(hash=TRUE, parent=emptyenv());
+	insert.words(art.env, art$abstract);
+
+	category.env <- new.env(hash=TRUE, parent=emptyenv());
+	insert.words(category.env, art$categories);
+
+	write.art.row.cols(art.env, stats$words, file);
+	write.art.row.cols(category.env, stats$categories, file);
+
+	# specjalne kolumny
+	cat(sprintf('"%s"\t', art$file.name), file=file, sep='');
+	cat(sprintf('%d\n', length(art$abstract)), file=file, sep='');
+}
+
+# FUNC add.article.rows(file, articles.directory)
+#
+# funkcja odpowiada za dodanie wierszy reprezentujacych
+# poszczegolne artykuly do dataframe'u
+#
+add.article.rows <- function(art.stats, file, articles.directory) {
+	articles <- list.files(
+		path=articles.directory, 
+		pattern="*.txt",
+		full.names=TRUE,
+		ignore.case=TRUE
+		);
+
+	for(a in articles) {
+		tmp <- load.article(a);
+		tmp$file.name <- a; # dodaj info o nazwie pliku
+
+		add.article.row(tmp, art.stats, file);
+	}
+}
+
+
+# FUNC create.aritcles.data.frame(articles.directory, output.df.filename)
+#
+# funkcja przeksztalca katalog zawierajcy przetworzone wstepnie
+# artykuly na pojedynczy plik zgody z formatem *data frame* jezyka R
+# drugi parametr okresla lokalizacje pliku ramki
+# 
+create.articles.data.frame <- function(articles.directory, output.df.filename) {
+	art.stats <- compute.global.stats(articles.directory);
+	df.file   <- file(output.df.filename, "wt");
+	
+	add.df.header(df.file, art.stats);
+	add.df.stats.row(df.file, art.stats);
+
+	add.article.rows(art.stats, df.file, articles.directory);	
+
+	close(df.file);
+}
 
 
 
