@@ -87,7 +87,7 @@ predict.mcTmnb.v2 <- function(model, data) {
 #
 # RETURN obiekt klasy mcTmnb do uzycia w funkcji predict
 #
-train.multinominal.nb <- function(data, fact) {
+train.multinomial.nb <- function(data, fact) {
 	lvl         <- levels(fact);
 	class.count <- length(lvl);
 	words.count <- ncol(data);

@@ -311,6 +311,7 @@ add.article.rows <- function(art.stats, file, articles.directory) {
 	for(a in articles) {
 		tmp <- load.article(a);
 		tmp$file.name <- a; # dodaj info o nazwie pliku
+		cat(sprintf('Adding row: %s\n', a));
 
 		add.article.row(tmp, art.stats, file);
 	}
