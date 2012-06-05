@@ -365,7 +365,11 @@ model <- train.multinomial.nb(data=learn.data, fact=learn.cls)
 # lub
 model <- train.bernoulli.nb(data=learn.data, fact=learn.cls)
 
+# algorytmy zwracaja tablice p-stwa
+# przenaleznosci przykladu do poszczegolnych
+# klas
 p <- predict(model, test.data);
+c <- apply(p, 1, function(r) which(r == max(r)))
 table(p, test.cls)
 		\end{verbatim}
 		
@@ -375,7 +379,49 @@ table(p, test.cls)
 
 	\subsection{Funkcja \texttt{naiveBayes} z pakietu \texttt{e1071}}
 	
-	\subsection{Funkcja \texttt{rpart} z pakietu }
+	Sygnatura funkcji \texttt{naiveBayes} wygląda następująco:
+\begin{verbatim}
+naiveBayes(formula, data, laplace = 0, ..., subset, na.action = na.pass)
+\end{verbatim}
+	Funkcja była wywoływana na dokładnie tych samych danych co
+	pozostałe algorytmy. 
+	
+	Poniżej przedstawiamy przykładowe 
+	wywołanie funkcji przy założeniu że zmienna \texttt{lst}
+	została zwrócona przez funkcje \texttt{vectorize.data}.
+\begin{verbatim}
+data <- lst$data;
+tmp  <- colnames(lst$data);
+data.class <- lst$fact;
+
+formula.string <- paste(tmp, collapse=' + ');
+formula.string <- paste('class ~', formula.string);
+f <- formula(formula.string);
+
+model <- naiveBayes(f, data, laplace);
+\end{verbatim}
+	
+	\subsection{Funkcja \texttt{rpart} z pakietu \texttt{rpart}}
+	
+	Funkcja \texttt{rpart} buduje modele klasyfikacji w oparciu 
+	o drzewa decyzyjne, sygnatura funkcji wygląda następująco:
+\begin{verbatim}
+rpart(formula, data, weights, subset, na.action = na.rpart, method,
+      model = FALSE, x = FALSE, y = TRUE, parms, control, cost, ...)
+\end{verbatim}
+	
+	Funkcja była wywoływana w następujący sposób:
+\begin{verbatim}
+data <- lst$data;
+tmp  <- colnames(lst$data);
+data.class <- lst$fact;
+
+formula.string <- paste(tmp, collapse=' + ');
+formula.string <- paste('class ~', formula.string);
+f <- formula(formula.string);
+
+model <- rpart(f, data, method="class");
+\end{verbatim}
 
 \section{Uzyskane wyniki}
 
