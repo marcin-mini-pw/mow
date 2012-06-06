@@ -38,7 +38,7 @@
 		
 		W naszej pracy wykorzystujemy jedynie część tego ogromnego zbioru 
 		danych dystrybuowaną w postaci pliku \texttt{Part1.zip} i zawierającą
-		zwycięskie artykuły naukowe z lat 1990 - 1994 (łącznie 10 097 streszczeń).
+		zwycięskie artykuły naukowe z lat 1990 - 1994 (łącznie 51 760 streszczeń).
 		\begin{figure}[htb]
 			\centering
 			\includegraphics[scale=0.45]{./img/part1_dir_struct}
@@ -155,7 +155,7 @@ preprocess('c:\data_in', 'c:\data_out');
 org.data.directory <- 'D:/tmp/words/Part1/'
 
 # Sciezka do katalogu ktory bedzie zawieral
-# przetworzone dane oraz dane tymczsowe
+# przetworzone dane oraz dane tymczasowe
 data.directory <- 'd:/mtmp/';
 		\end{verbatim}
 		Po wykonaniu skryptu katalog wskazany jako \verb+data.directory+
@@ -292,7 +292,7 @@ save(df, file='articles.bin', compress=FALSE);
 				(takie wiersze mogły się pojawić po wykonaniu kroków 1 i 2)
 			\item
 				Usuwamy kolumny odpowiadające słowom które występują
-				w mniej niż \texttt{min.n} razy
+				w mniej niż \texttt{min.w} razy
 			\item
 				Usuwamy informacje dodatkowe (kolumny rozpoczynające się
 				od ,,meta.'')
@@ -369,7 +369,7 @@ model <- train.bernoulli.nb(data=learn.data, fact=learn.cls)
 # przenaleznosci przykladu do poszczegolnych
 # klas
 p <- predict(model, test.data);
-c <- apply(p, 1, function(r) which(r == max(r)))
+p <- apply(p, 1, function(r) which(r == max(r)))
 table(p, test.cls)
 		\end{verbatim}
 		
