@@ -123,7 +123,7 @@ vectorize.data <- function(df, min.n=500, invalid.cats.hash=emptyenv(), min.w=2)
 	#
 	words.count  <- integer(max.words.index);
 	for(wi in 1:max.words.index) {
-		cat(sprintf('II Faza: Wiersz %d / %d\t\t\t\r', wi, max.words.index));
+		cat(sprintf('II Faza: Kolumna %d / %d\t\t\t\r', wi, max.words.index));
 		flush(stdout());
 
 		words.count[wi] = sum(df[rows.vector,wi]);
@@ -131,8 +131,12 @@ vectorize.data <- function(df, min.n=500, invalid.cats.hash=emptyenv(), min.w=2)
 	words <- (1:max.words.index)[words.count >= min.w];
 	cat('\n');
 
+	used.columns <- which(allow.in.data == TRUE);
+
 	return(list(data=df[rows.vector, words], 
-			  fact=factor(cats.vector)));
+			  fact=factor(cats.vector),
+			  rows.indexes=rows.vector,
+			  org.classes=df[rows.vector,used.columns]));
 }
 
 # FUNC make.df.binary(df)
