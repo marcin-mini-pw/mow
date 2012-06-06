@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[polish]{babel}
 \usepackage[OT4]{polski}
+\usepackage{amsmath}
 
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 
@@ -354,11 +355,11 @@ lst <- vectorize.data(
 test <- sample(1:nrow(lst$data), 900, replace=FALSE)
 
 test.data <- lst$data[test,]
-test.cls  <- lst$fact[test,]
+test.cls  <- lst$fact[test]
 row.names(test.data) <- NULL
 
 learn.data <- lst$data[-test,]
-learn.cls  <- lst$fact[-test,]
+learn.cls  <- lst$fact[-test]
 row.names(learn.data) <- NULL
 
 model <- train.multinomial.nb(data=learn.data, fact=learn.cls)
@@ -369,8 +370,8 @@ model <- train.bernoulli.nb(data=learn.data, fact=learn.cls)
 # przenaleznosci przykladu do poszczegolnych
 # klas
 p <- predict(model, test.data);
-p <- apply(p, 1, function(r) which(r == max(r)))
-table(p, test.cls)
+p2 <- apply(p, 1, function(r) which(r == max(r)))
+table(p2, test.cls)
 		\end{verbatim}
 		
 		\clearpage
@@ -425,6 +426,55 @@ model <- rpart(f, data, method="class");
 
 \section{Uzyskane wyniki}
 
+	\subsection{Sposób obliczania błędów}
+	
+		Za sposób obliczania błędu klasyfikacji 
+		odpowiedzialne są metody \texttt{class.error} oraz
+		\texttt{mclass.error}. Pierwsza z nich operuje na
+		pojedynczym faktorze zawierającym klasyfikacje 
+		przykładów ze zbioru testowego. Druga - \texttt{mclass.error} - 
+		operuje na tablicy prawdopodobieństw przynależności przykładu
+		do poszczególnych klas.
+		
+		Obie funkcje zwracają listę zawierającą następujące pola:
+		\begin{description}
+			\item[\$good] 
+				Określa liczbę poprawnie klasyfikowanych elementów.
+				Zakładamy że element jest poprawnie klasyfikowany 
+				jeżeli zostanie mu nadana jedna z etykiet dziedzin
+				do których naprawdę należy. Na przykład jeżeli
+				dany wiersz opisuje artykuł którego dziedzinami
+				zastosowań są biologia i chemia, to przypisanie 
+				mu klasy biologia lub klasy chemia jest uznawane 
+				za poprawną klasyfikacje
+			\item[\$bad]
+				Określa liczbę przykładów które nie zostały poprawnie
+				zaklasyfikowane
+			\item[\$skipped]
+				Ponieważ w wyniku procesu wektoryzacji danych, dany 
+				wiersz może występować w danych testowych wielokrotnie
+				(obniżając w ten sposób jakość klasyfikatora) to zdecydowaliśmy
+				się uwzględniać tylko jedno wystąpienie każdego wiersza.
+				To pole mówi ile łącznie powtórek należało odrzucić
+				(zwykle wartość tego pola nie powinna przekraczać 5\% wielkości
+				zbioru testowego)
+		\end{description}
+
+		Jako miarę oceny jakości klasyfikatora postanowiliśmy przyjąć
+		procent poprawnie klasyfikowanych przykładów w stosunku do 
+		wszystkich przykładów:
+		\[ \text{error} = \frac{\text{good}}{\text{good}+\text{bad}} \]
+		
+		Dodatkowo dla przypadku niewielkiej liczby klas (maksymalnie 5)
+		będziemy podawać macierze błędów, ze względu na ich 
+		duży potencjał informacyjny.
+		
+	\subsection{Wyniki I: 3 kategorie}
+	
+	\subsection{Wyniki II: 4 kategorie}
+	
+	\subsection{Wyniki III: 5 kategorii}
+		
 \section{Wnioski}
 
 % --------------------------------------------
