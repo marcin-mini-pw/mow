@@ -21,6 +21,30 @@
 \maketitle
 
 \section{Wstęp}
+W ramach projektu z przedmiotu Metody Odkrywania Wiedzy 
+postanowiliśmy zająć się klasyfikacją tekstów. 
+Zadanie jakie przed sobą postawiliśmy polega na rozpoznaniu
+dziedziny nauki z jaką jest związany dany artykuł naukowy
+na podstawie jego abstraktu.
+
+W trakcie projektu zostały zaimplementowane
+algorytmy: kNN oraz naiwny klasyfikator bayesowski w wersji
+podstawowej, multinomial oraz bernoulli.
+Algorytmy te zostały porównane z ich odpowiednikami 
+zaimplementowanymi w środowisku R, dodatkowo dokonaliśmy 
+porównania z algorytmem budującym drzewa decyzyjne.
+ 
+W ramach części analitycznej projektu staraliśmy się odpowiedzieć na
+pytania:
+\begin{enumerate}
+	\item
+		Który z testowanych algorytmów 
+		najlepiej radzi sobie z postawionym
+		problemem klasyfikacji
+	\item
+		Jakie czynniki mają decydujący wpływ na jakość
+		uzyskiwanych hipotez
+\end{enumerate}
 
 \section{Wstępne przetwarzanie surowych danych}
 	\subsection{Opis danych}
@@ -422,6 +446,39 @@ formula.string <- paste('class ~', formula.string);
 f <- formula(formula.string);
 
 model <- rpart(f, data, method="class");
+\end{verbatim}
+
+	\subsection{Funkcja \texttt{knn} z pakietu \texttt{class}}
+	
+	Funkcja \texttt{knn} implementuje algorytm k-najbliższych sąsiadów,
+	sygnatura funkcji wygląda następująco:
+\begin{verbatim}
+knn(train, test, cl, k = 1, l = 0, prob = FALSE, use.all = TRUE)
+\end{verbatim}
+
+	Funkcja była wywoływana w następujący sposób (\texttt{k} i 
+	\texttt{l} stanowią parametry
+	algorytmu)
+\begin{verbatim}
+test <- sample(1:nrow(lst$data), 900, replace=FALSE)
+
+test.data <- lst$data[test,]
+test.cls  <- lst$fact[test]
+row.names(test.data) <- NULL
+
+learn.data <- lst$data[-test,]
+learn.cls  <- lst$fact[-test]
+row.names(learn.data) <- NULL
+
+result <- knn(learn.data, test.data, learn.cls, k, l)
+
+# funkcja knn jako wynik klasyfikacji
+# moze zwrocic wartosc NA
+result.na <- is.na(result);
+result    <- result[!result.na];
+test      <- test[!result.na];
+
+class.error(result, test, lst)
 \end{verbatim}
 
 \section{Uzyskane wyniki}
