@@ -10,11 +10,26 @@
 #
 # RETURN obiekt klasy mcTbnb do uzycia w funkcji predict
 #
+metric.euc <- function(v1,v2) {
+  v3 <- v2 - v1
+  v3 <- v3^2
+  dist <- sum(v3)
+  return (sqrt(dist))
+}
+
+# FUNC train.knn(data, fact)
+#
+# data - ramka danych zawierajaca liczby
+# fact - faktor zawierajacy poprawna klasyfikacje
+# tekstow nalezacych do data
+#
+# RETURN obiekt klasy mcTbnb do uzycia w funkcji predict
+#
 train.knn <- function(data, fact, k=3, metric=metric.cos) {
   m <- list(data=data, fact=fact, k=k, metric=metric)
   class(m) <- 'ptmKnn'
   return (m)
- }
+}
 
 # FUNC predict.ptmKnn(model, data)
 #
@@ -30,7 +45,21 @@ train.knn <- function(data, fact, k=3, metric=metric.cos) {
 # wiersz etykietę kategorii.
 #
 predict.ptmKnn <- function(model, data) {
+  
+  result <- c()
 
-	return (rep (model$fact[1], nrow(data)));
+  # przeglądamy wszystkie testowane przypadki
+  for (i in 1:nrow(data)){
+    distances <- sapply (model$data, model$metric, data[i,])
+    order <- rev(order(distances))
+    voters <- table(model$fact[order[1:model$k]])
+    voteing <- as.data.frame(voters)
+    voteing_order <- rev(order(voteing$Freq))
+    voteing_res <- voteing$voters[voteing_order[1]]
+    voteing_res <- 1 
+    
+    result <- append(result, voteing_res)
+  }
+	return (result)
 }
 
