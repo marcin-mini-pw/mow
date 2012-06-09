@@ -721,6 +721,27 @@ v <- vectorize.data(df, 700,
 		 	przewidywane kategorie}
 		 \end{table}
 		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&32&32&68&49&27\\
+  				GeologicalSciences& 24&38&56&40 &19\\
+  				LifeScience&34&32&58 &52&28\\
+  				Mathematics&43&27&62&44&20\\
+  				Physics&35&36&61&47&36\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu przydzielającego etykiety
+		 	w sposób losowy.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
 		 \begin{table}	
 		 	\centering	 	
 		 	\begin{tabular}{|l|l|}
@@ -733,7 +754,9 @@ v <- vectorize.data(df, 700,
 		 			kNN (class) k=5 & 0.3588 \\
 		 			kNN (class) k=10 & 0.3306 \\
 		 			rpart (rpart) & 0.2691 \\
-					NB (e1071) & 0.3034 \\		 			
+					NB (e1071) & 0.3034 \\	
+				\hline
+					Przydział losowy & 	0.7812 \\ 			
 		 		\hline
 		 	\end{tabular}
 		 	\caption{Tabela prezentuje wartość współczynnika error dla
@@ -896,6 +919,27 @@ v <- vectorize.data(df, 700,
 		 \end{table}
 		 
 		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&39&39 &60&42&25\\
+  				GeologicalSciences&33&32&62&49&21\\
+  				LifeScience&25&31&57&47&27\\
+  				Mathematics&41&38&58&45&27\\
+  				Physics&30&25&68&49&30\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu przydzielającego etykiety
+		 	w sposób losowy.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
 		 	\centering	 	
 		 	\begin{tabular}{|l|l|}
 		 		\hline
@@ -907,7 +951,9 @@ v <- vectorize.data(df, 700,
 		 			kNN (class) k=5 & 0.3981 \\
 		 			kNN (class) k=10 & 0.3709 \\
 		 			rpart (rpart) & 0.2691 \\
-					NB (e1071) & 0.4485 \\		 			
+					NB (e1071) & 0.4485 \\	
+				\hline
+					Przydział losowy & 0.7802 \\	 			
 		 		\hline
 		 	\end{tabular}
 		 	\caption{Tabela prezentuje wartość współczynnika error dla
@@ -1068,6 +1114,29 @@ v <- vectorize.data(df, 700,
 		 	przewidywane kategorie}
 		 \end{table}
 		 
+		  \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&26&27&66&40&19\\
+  				GeologicalSciences&29&38&81&48&23\\
+  				LifeScience&42&35&59 &47&34\\
+  				Mathematics&36&31&53&45&30\\
+  				Physics&35&34&46&52& 24\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu przydzielającego etykiety
+		 	w sposób losowy.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		
+		 
 		 \begin{table}[!h]
 		 	\centering	 	
 		 	\begin{tabular}{|l|l|}
@@ -1080,7 +1149,9 @@ v <- vectorize.data(df, 700,
 		 			kNN (class) k=5 & 0.4193 \\
 		 			kNN (class) k=10 & 0.4052 \\
 		 			rpart (rpart) & 0.2691 \\
-					NB (e1071) & 0.6532 \\		 			
+					NB (e1071) & 0.6532 \\	
+				\hline
+					Przydział losowy & 	0.8014 \\	
 		 		\hline
 		 	\end{tabular}
 		 	\caption{Tabela prezentuje wartość współczynnika error dla
