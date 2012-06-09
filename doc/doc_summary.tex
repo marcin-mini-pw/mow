@@ -567,6 +567,10 @@ learn.cls  <- lst$fact[-test]
 row.names(learn.data) <- NULL
 		\end{verbatim}
 		
+		\textsc{UWAGA}: Liczba powtórzonych wierszy wynikających z procesu wektoryzacji
+		w prezentowanych zbiorach testowych wynosiła zawsze 8, a więc nie była znacząca.
+		W dalszych rozważaniach będziemy traktować klasy dokumentów jako rozłączne.
+		
 		\subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
 		 \texttt{min.w}=100}
 		 
@@ -737,6 +741,7 @@ v <- vectorize.data(df, 700,
 		 \end{table}
 		 
 		 \clearpage
+		 \newpage
 		 
 		 \subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
 		 \texttt{min.w}=40}
@@ -909,6 +914,8 @@ v <- vectorize.data(df, 700,
 		 	każdego z testowanych algorytmów}
 		 \end{table}
 		 
+		 \clearpage
+		 \newpage
 		 \subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
 		 \texttt{min.w}=10}
 		 
@@ -934,6 +941,154 @@ v <- vectorize.data(df, 700,
 		 	\caption{Rozkład kategorii w zbiorze danych}
 		 	\label{fig:v3hist}
 		 \end{figure}
+		 
+		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
+		 
+		  % Wersja 33333
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry & 139 & 3 & 20 & 0& 14 \\
+		 		GeologicalSciences & 1&154& 5 &2&0 \\
+		 		LifeScience& 3 & 2 &263 & 2& 1\\
+  				Mathematics&1 & 1 & 4 &209&8\\
+  				Physics&24 &5 &13 &19&107\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Multinomial Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&142 &2&17 & 0&9\\
+  				GeologicalSciences&0&150 & 4&1&0\\
+  				LifeScience&3 & 2& 263& 1&1\\
+  				Mathematics&1 & 2 &4 &208 &9\\
+  				Physics&22& 9  & 17&22 &111\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Bernoulli Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 % Wbudowane algorytmu
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&69 & 3 &12 &3 &12\\
+  				GeologicalSciences&4& 37 &4 &1&1\\
+  				LifeScience&65 & 124 &269&85&66\\
+  				Mathematics&9 & 0 & 8 &132 &4\\
+  				Physics& 21 &1 &12&11&47\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 5.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&62 & 2 & 10 & 3 &8\\
+  				GeologicalSciences&1 & 44&  2 & 0 & 1\\
+  				LifeScience&70 &115&272&72&60\\
+  				Mathematics&8 & 1&11&143& 8\\
+  				Physics&27 & 3 & 10 &14&53\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 10.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&128&13&16&4&15\\
+  				GeologicalSciences&21&122&57&20&33\\
+  				LifeScience&10&12&208&6&5\\
+  				Mathematics&5&9 & 15&189&16\\
+  				Physics&4 & 9&  9& 13&61\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu rpart z pakietu \texttt{rpart} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 22& 2 &12& 0&1\\
+  				GeologicalSciences&0&30 &6  &1 &1\\
+  				LifeScience&0 & 0&0 &0& 0 \\
+  				Mathematics& 7&17 & 27 &167 & 10\\
+  				Physics& 139&116 & 260& 64& 118\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu NB (naive bayes) z pakietu \texttt{e1071} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering	 	
+		 	\begin{tabular}{|l|l|}
+		 		\hline
+		 		Nazwa algorytmu & Współczynnik error \\
+		 		\hline
+		 			Multinomial NB & 0.1018	 \\
+		 			Bernoulli NB & 0.1008 \\
+		 		\hline
+		 			kNN (class) k=5 & 0.4193 \\
+		 			kNN (class) k=10 & 0.4052 \\
+		 			rpart (rpart) & 0.2691 \\
+					NB (e1071) & 0.6532 \\		 			
+		 		\hline
+		 	\end{tabular}
+		 	\caption{Tabela prezentuje wartość współczynnika error dla
+		 	każdego z testowanych algorytmów}
+		 \end{table}
+		 
+		 \clearpage
+		 \newpage
 \section{Wnioski}
 % duzo kolumn -> nadmierne dopasowanie
 % algorytmy specjalnie przystosowane do tekstu sa lepsze
