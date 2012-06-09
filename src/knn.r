@@ -13,6 +13,7 @@
 train.knn <- function(data, fact, k=3, metric=metric.cos) {
   m <- list(data=data, fact=fact, k=k, metric=metric)
   class(m) <- 'ptmKnn'
+  return (m)
  }
 
 # FUNC predict.ptmKnn(model, data)
@@ -30,6 +31,6 @@ train.knn <- function(data, fact, k=3, metric=metric.cos) {
 #
 predict.ptmKnn <- function(model, data) {
 
-	return (rep (data$fact[1], nrow(data)));
+	return (rep (model$fact[1], nrow(data)));
 }
 
