@@ -4,6 +4,7 @@
 \usepackage[polish]{babel}
 \usepackage[OT4]{polski}
 \usepackage{amsmath}
+\usepackage{url}
 
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
 
@@ -296,7 +297,7 @@ save(df, file='articles.bin', compress=FALSE);
 	
 \section{Wektoryzacja danych}
 		Utworzona w poprzednim punkcie tego dokumentu ramka danych
-		zawiera około XXX tysięcy wierszy oraz YYY tysięcy kolumn.
+		zawiera około 40 tysięcy wierszy oraz ponad 68 tysięcy kolumn.
 		Niestety taki rozmiar danych okazał się zbyt dużym obciążeniem
 		dla wykorzystywanych przez nas algorytmów. Dodatkowo okazało się
 		że większość algorytmów oczekuje pojedynczych etykiet dla danych
@@ -417,7 +418,7 @@ naiveBayes(formula, data, laplace = 0, ..., subset, na.action = na.pass)
 \begin{verbatim}
 data <- lst$data;
 tmp  <- colnames(lst$data);
-data.class <- lst$fact;
+data$class <- lst$fact;
 
 formula.string <- paste(tmp, collapse=' + ');
 formula.string <- paste('class ~', formula.string);
@@ -439,7 +440,7 @@ rpart(formula, data, weights, subset, na.action = na.rpart, method,
 \begin{verbatim}
 data <- lst$data;
 tmp  <- colnames(lst$data);
-data.class <- lst$fact;
+data$class <- lst$fact;
 
 formula.string <- paste(tmp, collapse=' + ');
 formula.string <- paste('class ~', formula.string);
@@ -450,7 +451,8 @@ model <- rpart(f, data, method="class");
 
 	\subsection{Funkcja \texttt{knn} z pakietu \texttt{class}}
 	
-	Funkcja \texttt{knn} implementuje algorytm k-najbliższych sąsiadów,
+	Funkcja \texttt{knn} implementuje algorytm k-najbliższych sąsiadów
+	\textbf{z metryką euklidesową},
 	sygnatura funkcji wygląda następująco:
 \begin{verbatim}
 knn(train, test, cl, k = 1, l = 0, prob = FALSE, use.all = TRUE)
@@ -520,19 +522,421 @@ class.error(result, test, lst)
 		Jako miarę oceny jakości klasyfikatora postanowiliśmy przyjąć
 		procent poprawnie klasyfikowanych przykładów w stosunku do 
 		wszystkich przykładów:
-		\[ \text{error} = \frac{\text{good}}{\text{good}+\text{bad}} \]
+		\[ \text{error} = \frac{\text{bad}}{\text{good}+\text{bad}} \]
 		
 		Dodatkowo dla przypadku niewielkiej liczby klas (maksymalnie 5)
 		będziemy podawać macierze błędów, ze względu na ich 
 		duży potencjał informacyjny.
 		
-	\subsection{Wyniki I: 3 kategorie}
-	
-	\subsection{Wyniki II: 4 kategorie}
-	
-	\subsection{Wyniki III: 5 kategorii}
+	\subsection{Wyniki I: Średni zbiór danych (SZD)}
+		Niestety podczas testów okazało się że pełny zbiór danych
+		wygenerowany według procedury opisanej w sekcjach 2 - 3 jest
+		zbyt duży jak na możliwości obliczeniowe komputerów którymi dysponujemy.
+		Dlatego testy przeprowadzimy na mniejszym zbiorze
+		artykułów, składającym się z pierwszych 10 tysięcy plików
+		wygenerowanych na etapie 2.2 (pierwsze 10 tysięcy plików według
+		porządku leksykograficznego po nazwach).
 		
+		Aby uwolnić czytelnika od uciążliwego procesu przetwarzania 
+		danych, dane na których przeprowadziliśmy testy są 
+		dostępne online.
+		Ramka danych reprezentująca SZD
+		zapisana w formacie binarnym języka R i skompresowana
+		za pomocą programu WinRAR jest do końca czerwca bieżącego roku
+		dostępna pod adresem: \url{http://gamma.mini.pw.edu.pl/~chwedczukm/szd.rar}
+		(rozmiar 2.7 MB). Archiwum powinno zawierać pojedynczy plik o nazwie
+		\texttt{articles.bin}.
+		
+		W ramach testów przyjęliśmy rozmiar zbioru testowego równy 1000
+		(około 20 \% całości danych).
+		Podział na zbiór testowy oraz uczący został dokonany w sposób
+		losowy i był taki sam dla każdego z testowanych algorytmów
+		(algorytmy uczyły się i były testowane na tych samych wierszach).
+		Poniżej przedstawiamy kod odpowiedzialny za dokonanie 
+		podziału danych:
+		\begin{verbatim}
+lst  <- vectorize.data(...)
+test <- sample(1:nrow(lst$data), 1000, replace=FALSE)
+
+test.data <- lst$data[test,]
+test.cls  <- lst$fact[test]
+row.names(test.data) <- NULL
+
+learn.data <- lst$data[-test,]
+learn.cls  <- lst$fact[-test]
+row.names(learn.data) <- NULL
+		\end{verbatim}
+		
+		\subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
+		 \texttt{min.w}=100}
+		 
+		 Wektoryzacji dokonano za pomocą poleceń:
+		 \begin{verbatim}
+load('articles.bin');
+v <- vectorize.data(df, 700, 
+	create.hash(c("c.OtherApplicationsNEC", "c.OtherSciencesNEC")),
+	100) 
+		 \end{verbatim}
+		 
+		 Przycięty zbiór danych zawiera ponad \textbf{850} kolumn odpowiadających słowom,
+		 oraz ponad 5 tysięcy wierszy odpowiadających streszczeniom.
+		 
+		 W zbiorze danych znalazło się pięć kategorii: c.Chemistry, 		 
+		 c.GeologicalSciences, c.LifeScienceBiological, c.Mathematics
+		 oraz c.Physics. Rozkład kategorii został przedstawiony na 
+		 rysunku \ref{fig:v1hist}
+		 \begin{figure}[!h]
+		 	\centering
+		 		\includegraphics[width=\textwidth]{./img/v1_cats}
+		 	\caption{Rozkład kategorii w zbiorze danych}
+		 	\label{fig:v1hist}
+		 \end{figure}
+		 
+		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
+		 
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry & 139 & 2 & 19 & 0 & 16 \\
+		 		GeologicalSciences & 0&152&8&4&1 \\
+		 		LifeScience&4&2&261& 2&1\\
+  				Mathematics&0&1&2&205&11\\
+  				Physics&25&8&15&21&101\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Multinomial Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&144&2&18&0&15\\
+  				GeologicalSciences&2&148&6&4&0\\
+  				LifeScience&4&3&260& 1&1\\
+  				Mathematics&1&1&3&206&12\\
+  				Physics&17&11 &18&21&102\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Bernoulli Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 % Wbudowane algorytmu
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&89&4&11&4&14\\
+  				GeologicalSciences&5&57&6&1&1\\
+  				LifeScience&45&97&270&66&56\\
+  				Mathematics&6&1&5&149&9\\
+  				Physics&23&6&13&12&50\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 5.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&74&3&14&3 &7\\
+  				GeologicalSciences&5&82&8&0&3\\
+  				LifeScience&50 &68&259&54 & 46\\
+  				Mathematics&9 & 2 &10&165&6\\
+  				Physics&30&10&14&10&68\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 10.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&128&13&16&4&15\\
+  				GeologicalSciences&21&122&57&20&33\\
+  				LifeScience&10&12&208&6&5\\
+  				Mathematics&5&9 & 15&189&16\\
+  				Physics&4 & 9&  9& 13&61\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu rpart z pakietu \texttt{rpart} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&92&5&24&1&8\\
+  				GeologicalSciences&1&121&24&1&4\\
+  				LifeScience&0&3 & 174 & 1& 0\\
+  				Mathematics&5 & 5 & 23 & 195 & 19\\
+  				Physics&70 & 31 & 60 & 34 & 99\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu NB (naive bayes) z pakietu \texttt{e1071} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}	
+		 	\centering	 	
+		 	\begin{tabular}{|l|l|}
+		 		\hline
+		 		Nazwa algorytmu & Współczynnik error \\
+		 		\hline
+		 			Multinomial NB & 0.1219 \\
+		 			Bernoulli NB & 0.1169 \\
+		 		\hline
+		 			kNN (class) k=5 & 0.3588 \\
+		 			kNN (class) k=10 & 0.3306 \\
+		 			rpart (rpart) & 0.2691 \\
+					NB (e1071) & 0.3034 \\		 			
+		 		\hline
+		 	\end{tabular}
+		 	\caption{Tabela prezentuje wartość współczynnika error dla
+		 	każdego z testowanych algorytmów}
+		 \end{table}
+		 
+		 \clearpage
+		 
+		 \subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
+		 \texttt{min.w}=40}
+		 
+		 Wektoryzacji dokonano za pomocą poleceń:
+		 \begin{verbatim}
+load('articles.bin');
+v <- vectorize.data(df, 700, 
+	create.hash(c("c.OtherApplicationsNEC", "c.OtherSciencesNEC")),
+	40) 
+		 \end{verbatim}
+		 
+		 Przycięty zbiór danych zawiera około \textbf{1700} kolumn odpowiadających
+		 słowom,
+		 oraz ponad 5 tysięcy wierszy odpowiadających streszczeniom.
+		 
+		 W zbiorze danych znalazło się pięć kategorii: c.Chemistry, 		 
+		 c.GeologicalSciences, c.LifeScienceBiological, c.Mathematics
+		 oraz c.Physics. Rozkład kategorii został przedstawiony na 
+		 rysunku \ref{fig:v2hist}
+		 \begin{figure}[!h]
+		 	\centering
+		 		\includegraphics[width=\textwidth]{./img/v2_cats}
+		 	\caption{Rozkład kategorii w zbiorze danych}
+		 	\label{fig:v2hist}
+		 \end{figure}
+		 
+		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
+		 
+		 % Wersja 2
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry & 139&2&20&0&15 \\
+		 		GeologicalSciences & 1 & 153 & 6 & 3& 1 \\
+		 		LifeScience& 4 & 2& 262 & 3&1\\
+  				Mathematics&0 & 1 & 4 & 204 & 5\\
+  				Physics&24 & 7 & 13 & 22 &108\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Multinomial Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&143&3&18&0&11\\
+  				GeologicalSciences&0 &150& 4 & 2&1\\
+  				LifeScience&4 & 2 & 264 & 1& 1\\
+  				Mathematics&1 & 1 & 3 &205 &7\\
+  				Physics&20 & 9 & 16&24&110\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Bernoulli Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 % Wbudowane algorytmu
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&83&4&13&3&14\\
+  				GeologicalSciences&5&46&10&1&1\\
+  				LifeScience&53&109&262&77&58\\
+  				Mathematics&8&0& 8&139&8\\
+  				Physics&19&6&12&12&49\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 5.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&69 & 2 & 12 & 3 & 8\\
+  				GeologicalSciences&5& 71 & 5 & 0 &1\\
+  				LifeScience&59 & 87 & 259 & 60&54\\
+  				Mathematics&9 &1 & 13 & 154 & 10\\
+  				Physics&26 & 4 & 16& 15& 57\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN z pakietu \texttt{class} 
+		 	z parametrem k = 10.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&128&13&16&4&15\\
+  				GeologicalSciences&21&122&57&20&33\\
+  				LifeScience&10&12&208&6&5\\
+  				Mathematics&5&9 & 15&189&16\\
+  				Physics&4 & 9&  9& 13&61\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu rpart z pakietu \texttt{rpart} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 66 & 1  & 35 &0 &7\\
+  				GeologicalSciences&2 &109 & 37 &3&3\\
+  				LifeScience&0 & 1  & 66  &1 &0\\
+  				Mathematics&6 & 8 & 32 &186 &13\\
+  				Physics& 94 & 46 & 135 &42 &107\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu NB (naive bayes) z pakietu \texttt{e1071} .
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering	 	
+		 	\begin{tabular}{|l|l|}
+		 		\hline
+		 		Nazwa algorytmu & Współczynnik error \\
+		 		\hline
+		 			Multinomial NB & 0.1108	 \\
+		 			Bernoulli NB & 0.1048 \\
+		 		\hline
+		 			kNN (class) k=5 & 0.3981 \\
+		 			kNN (class) k=10 & 0.3709 \\
+		 			rpart (rpart) & 0.2691 \\
+					NB (e1071) & 0.4485 \\		 			
+		 		\hline
+		 	\end{tabular}
+		 	\caption{Tabela prezentuje wartość współczynnika error dla
+		 	każdego z testowanych algorytmów}
+		 \end{table}
+		 
+		 \subsubsection{Wektoryzacja z parametrami \texttt{min.n}=700 i
+		 \texttt{min.w}=10}
+		 
+		  Wektoryzacji dokonano za pomocą poleceń:
+		 \begin{verbatim}
+load('articles.bin');
+v <- vectorize.data(df, 700, 
+	create.hash(c("c.OtherApplicationsNEC", "c.OtherSciencesNEC")),
+	10) 
+		 \end{verbatim}
+		 
+		 Przycięty zbiór danych zawiera około \textbf{3900} kolumn odpowiadających
+		 słowom,
+		 oraz ponad 5 tysięcy wierszy odpowiadających streszczeniom.
+		 
+		 W zbiorze danych znalazło się pięć kategorii: c.Chemistry, 		 
+		 c.GeologicalSciences, c.LifeScienceBiological, c.Mathematics
+		 oraz c.Physics. Rozkład kategorii został przedstawiony na 
+		 rysunku \ref{fig:v3hist}
+		 \begin{figure}[!h]
+		 	\centering
+		 		\includegraphics[width=\textwidth]{./img/v3_cats}
+		 	\caption{Rozkład kategorii w zbiorze danych}
+		 	\label{fig:v3hist}
+		 \end{figure}
 \section{Wnioski}
+% duzo kolumn -> nadmierne dopasowanie
+% algorytmy specjalnie przystosowane do tekstu sa lepsze
 
 % --------------------------------------------
 % BIBLIOGRAFIA
