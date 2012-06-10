@@ -74,7 +74,7 @@ train.knn <- function(data, fact, k=3, metric=metric.cos) {
 # zawierajaca następujące pola $vectors $fact $k $metric bedace odpowiednio
 # niezerową ramką danych zliczającą słowa, wektorem kalsyfikacji, wartoscia k i
 # metryka.  data musi zawierac dane niezbene do klasyfikacji (data MUSI
-# zawierac miec IDENTYCZNA strukture co dane uzyte przy nauce klasyfikatora)
+# zawierac miec IDENTYCZNA strukturę co dane uzyte przy nauce klasyfikatora)
 #
 # RETURN wektor która dla kazdego wiersza danych zwraca 
 # wiersz etykietę kategorii.
