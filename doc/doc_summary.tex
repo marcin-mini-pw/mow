@@ -713,27 +713,7 @@ v <- vectorize.data(df, 700,
 		 	przewidywane kategorie}
 		 \end{table}	
 		 
-		 \begin{table}[!h]
-			\centering
-		 	\small
-		 	\begin{tabular}{|l|r|r|r|r|r|}
-		 		\hline
-		 		& Chemistry & GeologicalSciences & LifeScience &
-		 			 Mathematics & Physics \\
-		 		\hline
-		 		Chemistry &98&4&36&1&10 \\
-		 		GeologicalSciences & 1&128&21&4&2 \\
-		 		LifeScience&2&1&194&1&1\\
-  				Mathematics&4&2&18&191&14\\
-  				Physics&63&30&36&35&103\\
-  				\hline
-		 	\end{tabular}
-		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes dla danych binarnych
-		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
-		 	na ramce danych).
-		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
-		 	przewidywane kategorie}
-		 \end{table}	 
+	 
 		 
 		 \begin{table}[!h]
 			\centering
@@ -901,6 +881,29 @@ v <- vectorize.data(df, 700,
 		 \end{table}
 		 
 		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &98&4&36&1&10 \\
+		 		GeologicalSciences & 1&128&21&4&2 \\
+		 		LifeScience&2&1&194&1&1\\
+  				Mathematics&4&2&18&191&14\\
+  				Physics&63&30&36&35&103\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu NB (naive bayes) z pakietu \texttt{e1071}
+		 	dla danych binarnych
+		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
+		 	na ramce danych).
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
 		 	\centering
 		 	\small
 		 	\begin{tabular}{|l|r|r|r|r|r|}
@@ -927,8 +930,7 @@ v <- vectorize.data(df, 700,
 		 		\hline
 		 		Nazwa algorytmu & Współczynnik error \\
 		 		\hline
-		 			Naiwny Bayes (NB) & 0.1401 \\
-		 			Naiwny Bayes (NB) + dane binarne & 0.2681 \\
+		 			Naiwny Bayes binarny (NB) & 0.1401 \\
 		 			Multinomial NB & 0.1219 \\
 		 			Bernoulli NB & 0.1169 \\
 		 			kNN k=10 euklides & 0.3215 \\
@@ -938,6 +940,7 @@ v <- vectorize.data(df, 700,
 		 			kNN (class) k=10 & 0.3306 \\
 		 			rpart (rpart) & 0.2691 \\
 					NB (e1071) & 0.3034 \\	
+					NB (e1071) + dane binarne & 0.2681 \\
 				\hline
 					Przydział losowy & 	0.7812 \\ 			
 		 		\hline
@@ -999,27 +1002,7 @@ v <- vectorize.data(df, 700,
 		 	przewidywane kategorie}
 		 \end{table}
 		 
-		 \begin{table}[!h]
-			\centering
-		 	\small
-		 	\begin{tabular}{|l|r|r|r|r|r|}
-		 		\hline
-		 		& Chemistry & GeologicalSciences & LifeScience &
-		 			 Mathematics & Physics \\
-		 		\hline
-		 		Chemistry &37&5& 78&48&23 \\
-		 		GeologicalSciences & 20&16&58&13&17 \\
-		 		LifeScience&8&6&12&9&4\\
-  				Mathematics&7&24&20&25&15\\
-  				Physics&96&84&137&137&71\\
-  				\hline
-		 	\end{tabular}
-		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes dla danych binarnych
-		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
-		 	na ramce danych).
-		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
-		 	przewidywane kategorie}
-		 \end{table}
+
 		 
 		 \begin{table}[!h]
 			\centering
@@ -1186,6 +1169,29 @@ v <- vectorize.data(df, 700,
 		 	przewidywane kategorie}
 		 \end{table}
 		 
+		 		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &72&2&37&1&7 \\
+		 		GeologicalSciences & 1&113&39&1&1 \\
+		 		LifeScience&0&0&90&0&0\\
+  				Mathematics&3&5&20&189&9\\
+  				Physics&92&45&119&41&113\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu NB (naive bayes) z pakietu 
+		 	\texttt{e1071} dla danych binarnych
+		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
+		 	na ramce danych).
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
 		 \begin{table}[!h]
 		 	\centering
 		 	\small
@@ -1213,8 +1219,7 @@ v <- vectorize.data(df, 700,
 		 		\hline
 		 		Nazwa algorytmu & Współczynnik error \\
 		 		\hline
-		 			Naiwny Bayes (NB) & 0.1401 \\
-		 			Naiwny Bayes (NB) + dane binarne & 0.1743 \\
+		 			Naiwny Bayes binarny (NB) & 0.1401 \\
 		 			Multinomial NB & 0.1108	 \\
 		 			Bernoulli NB & 0.1048 \\
 		 			kNN k=10 euklides & 0.3618 \\
@@ -1224,6 +1229,7 @@ v <- vectorize.data(df, 700,
 		 			kNN (class) k=10 & 0.3709 \\
 		 			rpart (rpart) & 0.2691 \\
 					NB (e1071) & 0.4485 \\	
+					NB (e1071) + dane binarne & 0.4062 \\
 				\hline
 					Przydział losowy & 0.7802 \\	 			
 		 		\hline
@@ -1322,6 +1328,27 @@ v <- vectorize.data(df, 700,
 		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
 		 	przewidywane kategorie}
 		 \end{table}
+		 
+		\begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 69&3&13&4&10\\
+  				GeologicalSciences&4&52&2&0&1\\
+  				LifeScience&70&108&272&81&66\\
+  				Mathematics& 7&1&7&134&7\\
+  				Physics&18&1&11&13&46\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN  
+		 	z parametrem k = 10 i metryką euklidesową.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}		 
 		 
 		 % Wbudowane algorytmu
 		 \begin{table}[!h]
@@ -1438,6 +1465,7 @@ v <- vectorize.data(df, 700,
 		 			Naiwny Bayes (NB) & 0.1401 \\
 		 			Multinomial NB & 0.1018	 \\
 		 			Bernoulli NB & 0.1008 \\
+		 			kNN k=10 euklides & 0.4052 \\
 		 		\hline
 		 			kNN (class) k=5 & 0.4193 \\
 		 			kNN (class) k=10 & 0.4052 \\
