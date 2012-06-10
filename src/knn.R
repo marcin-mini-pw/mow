@@ -15,6 +15,19 @@ metric.euclid <- function(v1,v2) {
   return (sqrt (sum ((v2 - v1)^2)))
 }
 
+# FUNC metric.cos(v1,v2) 
+# 
+# Funkcja liczy odległość pomiędzy wektorami zgodnie z metryką kosinusową.
+#
+# v1 - pierwszy wektor
+# v2 - drugi wektor
+#
+# RETURN odległość pomiędzy wektorami wyrażona kontem  
+#
+metric.cos <- function(v1,v2) {
+  return ((sum (v1*v2)) / (sqrt (sum (v1^2)) * sqrt (sum (v2^2))))
+}
+
 # FUNC data.compact(data) 
 # 
 # Funkcja kompresuje dane (usuwa kolumny z wartością zero) na potrzeby
