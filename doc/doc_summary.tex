@@ -347,14 +347,108 @@ lst <- vectorize.data(
 
 \section{Zastosowane algorytmy}
 	\subsection{Algorytm kNN}
+		
+		Algorytm działa według poniższego ciągu instrukcji:
+		\begin{enumerate}
+			\item
+				Dla każdego wektora $V$ który należy zaklasyfikować
+				wykonuj kroki 2-3
+			\item
+				Znajdź $k$ wektorów ze zbioru trenującego najbliższych 
+				wektorowi $V$ względem zadanej
+				metryki. Oznaczmy ten zbiór $k$ wektorów jako $VN$
+			\item
+				Przydziel wektorowi $V$ kategorię najczęściej występującą 
+				w zbiorze $VN$ (w przypadku występowania więcej niż jednej
+				takiej kategorii, dokonaj wyboru w sposób losowy)
+		\end{enumerate}
+		
+		\subsubsection{Przykład użycia}
+		Poniżej przedstawiamy przykład użycia algorytmu kNN.
+		W poniższych listingach będziemy zakładać że zmienna \texttt{lst}
+		została zwrócona przez funkcje \texttt{vectorize.data}.
+		\begin{verbatim}
+test <- sample(1:nrow(lst$data), 1000, replace=FALSE)
+
+test.data <- lst$data[test,]
+test.cls  <- lst$fact[test]
+row.names(test.data) <- NULL
+
+learn.data <- lst$data[-test,]
+learn.cls  <- lst$fact[-test]
+row.names(learn.data) <- NULL
+
+metric <- metric.euclid;
+# lub
+metric <- metric.cos;
+
+result <- knn2(learn.data, learn.cls, test.data, metric, k=10)
+
+# algorytmy zwraca wektor kategorii
+# dla danych z test.data
+table(result, test.cls)
+		\end{verbatim}
+		
+	
 	\subsection{Algorytm Naive Bayes}
+		Niech $\Omega$ oznacza dziedzinę klasyfikowanych przykładów,
+	a $TR$ zbiór trenujący będący podzbiorem dziedziny.
+	Ponadto dla $x \in \Omega$ niech
+	$c(x) \in C$ oznacza klasę do której należy przykład $x$,
+	a $a_i(x)$ wartość atrybutu o numerze $i$.
+	W naszym przypadku będziemy zakładać że $a_i(x) = 1$ jeżeli słowo
+	odpowiadające kolumnie $i$ występuje w danym streszczeniu, oraz
+	że $a_i(x) = 0$ w przeciwnym wypadku (pierwszym krokiem algorytmu
+	będzie odpowiednie przetworzenie ramki danych tak aby
+	występowały w niej tylko zera i jedynki).
+	
+	Stworzona przez nas wersja algorytmu bezpośrednio
+	implementuje równanie:
+	\[ h(x) = \arg\max_{c \in C}{
+		\log P(c) \cdot \sum_{i=1}^{n} \log P(a_i(x)|c)	
+	} \]
+	gdzie
+	\begin{list}{}{}
+		\item
+			$P(c) = \frac{|TR^c|}{|TR|}$
+		\item
+			$P(a_i(x)|c) = \frac{|TR_{a_i = a_i(x)}^c| + p\cdot |TR^c|}{|TR^c| + |TR^c|}$ \  (dodatkowo stosujemy m-estymacje)
+	
+	\end{list}
+	
+	
+	\textsc{UWAGA}: Jako $p$ możemy podać dowolną liczbę rzeczywistą,
+	możemy również ustawić $p = -1$(przy wywołaniu funkcji) co spowoduje przyjęcie za $p$ wartości $\frac{1}{|TR^c|}$.
+		
+		
+		\subsubsection{Przykład użycia}
+		Poniżej przedstawiamy przykład użycia Naiwnego Klasyfikatora Bayesowskiego.
+		W poniższych listingach będziemy zakładać że zmienna \texttt{lst}
+		została zwrócona przez funkcje \texttt{vectorize.data}.
+		\begin{verbatim}
+test <- sample(1:nrow(lst$data), 1000, replace=FALSE)
+
+test.data <- lst$data[test,]
+test.cls  <- lst$fact[test]
+row.names(test.data) <- NULL
+
+learn.data <- lst$data[-test,]
+learn.cls  <- lst$fact[-test]
+row.names(learn.data) <- NULL
+
+# ramka powinna zawierac krotnosci wystapien
+# slow
+model <- train.naive.bayes(learn.data, learn.cls, p)
+
+# algorytmy zwracaja tablice p-stwa
+# przenaleznosci przykladu do poszczegolnych
+# klas
+p <- predict(model, test.data);
+p2 <- apply(p, 1, function(r) which(r == max(r)))
+table(p2, test.cls)
+		\end{verbatim}
 	
 	\subsection{Algorytm Multinomial Bayes}	
-		\textsc{DANE WEJŚCIOWE}: Zwektoryzowana ramka danych zawierająca
-		liczby wystąpień poszczególnych słów\\
-		\textsc{DANE WYJŚCIOWE}: Model danych do wykorzystania w funkcji
-		\texttt{predict}\\	
-		
 		Oba zaprezentowane tutaj algorytmy pochodzą z
 		13 rozdziału pozycji \cite{irbook}.
 	
@@ -370,14 +464,15 @@ lst <- vectorize.data(
 			\centering
 			\includegraphics[scale=0.45]{./img/bnbalg}
 			\caption{Pseudokod algorytmu Bernoulli Naive Bayes}
-		\end{figure}		
+		\end{figure}
+		\clearpage		
 
 		\subsubsection{Przykład użycia}
 		Poniżej przedstawiamy przykład użycia poszczególnych algorytmów.
 		W poniższych listingach będziemy zakładać że zmienna \texttt{lst}
 		została zwrócona przez funkcje \texttt{vectorize.data}.
 		\begin{verbatim}
-test <- sample(1:nrow(lst$data), 900, replace=FALSE)
+test <- sample(1:nrow(lst$data), 1000, replace=FALSE)
 
 test.data <- lst$data[test,]
 test.cls  <- lst$fact[test]
@@ -399,7 +494,7 @@ p2 <- apply(p, 1, function(r) which(r == max(r)))
 table(p2, test.cls)
 		\end{verbatim}
 		
-		\clearpage
+		
 	
 \section{Wykorzystywane algorytmy pakietu R}
 
@@ -528,7 +623,7 @@ class.error(result, test, lst)
 		będziemy podawać macierze błędów, ze względu na ich 
 		duży potencjał informacyjny.
 		
-	\subsection{Wyniki I: Średni zbiór danych (SZD)}
+	\subsection{Wyniki: Średni zbiór danych (SZD)}
 		Niestety podczas testów okazało się że pełny zbiór danych
 		wygenerowany według procedury opisanej w sekcjach 2 - 3 jest
 		zbyt duży jak na możliwości obliczeniowe komputerów którymi dysponujemy.
@@ -598,6 +693,48 @@ v <- vectorize.data(df, 700,
 		 
 		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
 		 
+		\begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &146&2&20&1&14 \\
+		 		GeologicalSciences & 0&148&5&2&0 \\
+		 		LifeScience&3&3&255&2&1\\
+  				Mathematics&0&0&0&177&3\\
+  				Physics&19&12&25&50&112\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}	
+		 
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &98&4&36&1&10 \\
+		 		GeologicalSciences & 1&128&21&4&2 \\
+		 		LifeScience&2&1&194&1&1\\
+  				Mathematics&4&2&18&191&14\\
+  				Physics&63&30&36&35&103\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes dla danych binarnych
+		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
+		 	na ramce danych).
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}	 
+		 
 		 \begin{table}[!h]
 			\centering
 		 	\small
@@ -634,6 +771,48 @@ v <- vectorize.data(df, 700,
   				\hline
 		 	\end{tabular}
 		 	\caption{Macierz pomyłek dla algorytmu Bernoulli Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 83&3&15 &5&12\\
+  				GeologicalSciences&5&97&9&0&2\\
+  				LifeScience&47&58&259&61&54\\
+  				Mathematics& 9&2&8&158&4\\
+  				Physics&24&5&14&8&58\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN  
+		 	z parametrem k = 10 i metryką euklidesową.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 2 &17&18&17&2\\
+  				GeologicalSciences&58 &16&84&115&64\\
+  				LifeScience&9 &11&8 &23&6\\
+  				Mathematics&77 &78&112&22&42\\
+  				Physics&22 &43&83&55&16\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN  
+		 	z parametrem k = 10 i metryką cosinus'ową.
 		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
 		 	przewidywane kategorie}
 		 \end{table}
@@ -748,8 +927,12 @@ v <- vectorize.data(df, 700,
 		 		\hline
 		 		Nazwa algorytmu & Współczynnik error \\
 		 		\hline
+		 			Naiwny Bayes (NB) & 0.1401 \\
+		 			Naiwny Bayes (NB) + dane binarne & 0.2681 \\
 		 			Multinomial NB & 0.1219 \\
 		 			Bernoulli NB & 0.1169 \\
+		 			kNN k=10 euklides & 0.3215 \\
+		 			kNN k=10 cosinus & 0.9314 \\
 		 		\hline
 		 			kNN (class) k=5 & 0.3588 \\
 		 			kNN (class) k=10 & 0.3306 \\
@@ -795,6 +978,49 @@ v <- vectorize.data(df, 700,
 		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
 		 
 		 % Wersja 2
+		 
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &146&2&20&1&14 \\
+		 		GeologicalSciences & 0&148&5&2&0 \\
+		 		LifeScience&3&3&255&2&1\\
+  				Mathematics&0&0&0&177&3\\
+  				Physics&19&12&25&50&112\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &37&5& 78&48&23 \\
+		 		GeologicalSciences & 20&16&58&13&17 \\
+		 		LifeScience&8&6&12&9&4\\
+  				Mathematics&7&24&20&25&15\\
+  				Physics&96&84&137&137&71\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes dla danych binarnych
+		 	(dane binarne uzyskano za pomocą wywołania funkcji \texttt{sign} 
+		 	na ramce danych).
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
 		 \begin{table}[!h]
 			\centering
 		 	\small
@@ -834,6 +1060,48 @@ v <- vectorize.data(df, 700,
 		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
 		 	przewidywane kategorie}
 		 \end{table}
+		 
+		\begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry&81&4& 14&5&10\\
+  				GeologicalSciences& 5&83 &8&0&2\\
+  				LifeScience&54&72&258&71&55\\
+  				Mathematics&10&1&10&141&8\\
+  				Physics&18&5&15&15&55\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN  
+		 	z parametrem k = 10 i metryką euklidesową.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}
+		 
+		 \begin{table}[!h]
+		 	\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		 & Chemistry & GeologicalSciences & LifeScience &
+		 			Mathematics & Physics \\
+		 		\hline
+  				Chemistry& 2 &17&18&17&2\\
+  				GeologicalSciences&58 &16&84&115&64\\
+  				LifeScience&9 &11&8 &23&6\\
+  				Mathematics&77 &78&112&22&42\\
+  				Physics&22 &43&83&55&16\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu kNN  
+		 	z parametrem k = 10 i metryką cosinus'ową.
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}		 
 		 
 		 % Wbudowane algorytmu
 		 \begin{table}[!h]
@@ -945,6 +1213,8 @@ v <- vectorize.data(df, 700,
 		 		\hline
 		 		Nazwa algorytmu & Współczynnik error \\
 		 		\hline
+		 			Naiwny Bayes (NB) & 0.1401 \\
+		 			Naiwny Bayes (NB) + dane binarne & 0.1743 \\
 		 			Multinomial NB & 0.1108	 \\
 		 			Bernoulli NB & 0.1048 \\
 		 		\hline
@@ -991,6 +1261,26 @@ v <- vectorize.data(df, 700,
 		 \subsubsection{Rezultaty dla zwektoryzowanego zbioru danych}
 		 
 		  % Wersja 33333
+		\begin{table}[!h]
+			\centering
+		 	\small
+		 	\begin{tabular}{|l|r|r|r|r|r|}
+		 		\hline
+		 		& Chemistry & GeologicalSciences & LifeScience &
+		 			 Mathematics & Physics \\
+		 		\hline
+		 		Chemistry &146&2&20&1&14 \\
+		 		GeologicalSciences & 0&148&5&2&0 \\
+		 		LifeScience&3&3&255&2&1\\
+  				Mathematics&0&0&0&177&3\\
+  				Physics&19&12&25&50&112\\
+  				\hline
+		 	\end{tabular}
+		 	\caption{Macierz pomyłek dla algorytmu Naive Bayes. 
+		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
+		 	przewidywane kategorie}
+		 \end{table}		  
+		  
 		 \begin{table}[!h]
 			\centering
 		 	\small
@@ -1143,6 +1433,7 @@ v <- vectorize.data(df, 700,
 		 		\hline
 		 		Nazwa algorytmu & Współczynnik error \\
 		 		\hline
+		 			Naiwny Bayes (NB) & 0.1401 \\
 		 			Multinomial NB & 0.1018	 \\
 		 			Bernoulli NB & 0.1008 \\
 		 		\hline
