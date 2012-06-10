@@ -1,9 +1,14 @@
-FILE=dokumentacja_wtepna
-${FILE}.pdf: ${FILE}.tex 
-	pdflatex ${FILE}.tex
-	pdflatex ${FILE}.tex
+FILES=dokumentacja_wtepna.tex doc_summary.tex
+CC = pdflatex
+
+all: $(FILES:.tex=.pdf)
+	echo $(FILES:.tex=.pdf)
+
+%.pdf: %.tex 
+	$(CC) $<
 clean:
-	rm "${FILE}.aux ${FILE}.log ${FILE}.out"
+	-rm $(FILES:.tex=.aux) $(FILES:.tex=.log) $(FILES:.tex=.out) $(FILES:.tex=.blt)
+
 cleanall: clean
-	rm "${FILE}.pdf" 
+	-rm $(FILES:.tex=.pdf) 
 
