@@ -1348,6 +1348,7 @@ v <- vectorize.data(df, 700,
 		 	z parametrem k = 10 i metryką euklidesową.
 		 	Kolumny reprezentują prawdziwe kategorie przykładów, wiersze
 		 	przewidywane kategorie}
+		 	\label{tab:blah1}
 		 \end{table}		 
 		 
 		 % Wbudowane algorytmu
@@ -1484,6 +1485,66 @@ v <- vectorize.data(df, 700,
 \section{Wnioski}
 % duzo kolumn -> nadmierne dopasowanie
 % algorytmy specjalnie przystosowane do tekstu sa lepsze
+
+	\begin{itemize}
+		\item
+			Algorytmy z rodziny naiwnych klasyfikatorów bayesowskich
+			okazały się najlepiej przystosowane do badanego zagadnienia
+			osiągając(w najlepszym wypadku) około 90\% skuteczność działania. 
+			W przypadku tej rodziny algorytmów uwzględnianie coraz to większej
+			liczby słów powodowało jedynie małą poprawę jakości klasyfikacji.
+		\item
+			Najlepszymi badanymi algorytmami okazały się algorytmy 
+			Bernoulli Naive Bayes oraz Multinomial Naive Bayes z lekką przewagą
+			tego pierwszego. A więc zdecydowanie najlepiej wypadły algorytmy 
+			specjalnie przygotowane do przetwarzania tekstu.
+		\item
+			Nasza implementacja naiwnego klasyfikatora bayesowskiego osiągnęła
+			85\% skuteczność działania przy zastosowaniu danych binarnych.
+			Implementacja klasyfikatora z biblioteki \texttt{e1071} znacznie
+			odstawała od czołówki, a w przypadku ostatniego(największego) zbioru
+			danych w ogóle nie ukończyła działania w rozsądnym czasie.
+			Wydaje się że winić należy w tym wypadku niestaranną implementację algorytmu. 
+			
+		\item
+			Drugim co do jakości uzyskiwanych hipotez algorytmem okazał się 
+			\texttt{rpart} osiągając 75\% skuteczność klasyfikacji.
+			Niestety z powodu ograniczeń czasowych nie byliśmy w stanie 
+			lepiej dopasować(wykorzystać) rozbudowanych opcji algorytmu.
+			\emph{Wydaje się nam}, iż algorytm ten ma duży potencjał i przy staranniejszym
+			doborze parametrów byłby w stanie konkurować z klasyfikatorami bayesowskimi.
+			
+			
+		\item
+			Algorytmy z rodziny kNN dla testowanego zakresu parametrów i metryki
+			euklidesowej uzyskiwały zazwyczaj
+			wyniki na poziomie 60 - 65\%. Przy zastosowaniu metryki kosinusowej algorytmy
+			z rodziny kNN uzyskiwały czasami wyniki gorsze niż losowy przydział kategorii!
+		
+		\item
+			Ponieważ w naszych danych jedna z klas (c.LifeScienceBiological) była
+			około dwa razy liczniejsza od pozostałych klas, algorytmy z rodzinny kNN
+			miały skłonność do częstszego typowania tej liczniejszej klasy - co odbijało
+			się niekorzystnie na jakości klasyfikacji (zobacz np. tabela \ref{tab:blah1})
+			
+		\item
+			Zwiększenie liczby sąsiadów z 5 do 10, lekko poprawiło jakość klasyfikacji.
+			Nasza implementacja algorytmu kNN również okazała się odrobinę lepsza od
+			wersji z biblioteki \texttt{class} (choć mógł tutaj działać niedeterminizm
+			związany z rozstrzyganiem konfliktów w przepadku równej liczby głosów w kNN)
+			
+		\item
+			Dla porównania wyników dodajmy jeszcze że algorytm przydzielający etykiety
+			w sposób losowy uzyskał około 20\% skuteczność
+			
+		\item
+			W przypadku większości testowanych algorytmów zwiększanie liczby
+			wykorzystywanych słów nie poprawia w zdecydowany sposób jakości
+			budowanych hipotez. Co gorsza duża liczba słów wydłuża czas działania,
+			obciąża pamięć oraz może prowadzić do budowy hipotez nadmiernie dopasowanych.
+	\end{itemize}
+	
+	
 
 % --------------------------------------------
 % BIBLIOGRAFIA
