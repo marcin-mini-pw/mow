@@ -48,4 +48,4 @@ for(f in flist) {
 
 
 source('preprocess.r');
-#preprocess(data.in, data.out);
+preprocess(data.in, data.out);
