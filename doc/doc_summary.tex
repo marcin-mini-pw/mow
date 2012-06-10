@@ -1090,11 +1090,11 @@ v <- vectorize.data(df, 700,
 		 		 & Chemistry & GeologicalSciences & LifeScience &
 		 			Mathematics & Physics \\
 		 		\hline
-  				Chemistry& 2 &17&18&17&2\\
-  				GeologicalSciences&58 &16&84&115&64\\
-  				LifeScience&9 &11&8 &23&6\\
-  				Mathematics&77 &78&112&22&42\\
-  				Physics&22 &43&83&55&16\\
+  				Chemistry& 2&17&20&18&2\\
+  				GeologicalSciences&57&17&84&114&63\\
+  				LifeScience&8&11&8&22&7\\
+  				Mathematics&78&81&108&21&42\\
+  				Physics&23&39&85&57&16\\
   				\hline
 		 	\end{tabular}
 		 	\caption{Macierz pomyłek dla algorytmu kNN  
@@ -1217,6 +1217,8 @@ v <- vectorize.data(df, 700,
 		 			Naiwny Bayes (NB) + dane binarne & 0.1743 \\
 		 			Multinomial NB & 0.1108	 \\
 		 			Bernoulli NB & 0.1048 \\
+		 			kNN k=10 euklides & 0.3618 \\
+		 			kNN k=10 cosinus & 0.9304 \\
 		 		\hline
 		 			kNN (class) k=5 & 0.3981 \\
 		 			kNN (class) k=10 & 0.3709 \\
