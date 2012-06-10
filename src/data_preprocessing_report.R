@@ -47,5 +47,5 @@ for(f in flist) {
 }
 
 
-source('preprocess.r');
+source('preprocess.R');
 preprocess(data.in, data.out);

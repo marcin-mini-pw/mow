@@ -114,7 +114,7 @@ stem.abstract.text <- function(abstract.text) {
 # --------------------------------------------------
 # ladowanie pliku do obslugi stopwords
 # --------------------------------------------------
-source('stopwords.r');
+source('stopwords.R');
 
 init.stop.words.dictionary();
 # --------------------------------------------------
